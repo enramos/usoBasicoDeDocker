@@ -1,0 +1,932 @@
+////
+NO CAMBIAR!!
+Codificación, idioma, tabla de contenidos, tipo de documento
+////
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:imagesdir: ./images
+:linkattrs:
+
+
+
+
+////
+Nombre y título del trabajo
+////
+# Uso básico de Docker
+Servicio de las Tecnologías de la Información y las Comunicaciones - Universidad de Almería
+
+image::logocloudstic.png[]
+
+// NO CAMBIAR!! (Entrar en modo no numerado de apartados)
+:numbered!: 
+
+
+[abstract]
+== Resumen
+////
+COLOCA A CONTINUACION EL RESUMEN
+////
+Docker es un proyecto open source creado en 2013 y que ha supuesto una revolución para el desarrollo y despliegue de operaciones. Docker abstrae el hardware y el sistema operativo del host ejecutando las aplicaciones en contenedores, compartimentos aislados que contienen todos los recursos para una aplicación o servicio.
+
+En este seminario veremos cómo usar Docker para el desarrollo de aplicaciones sencillas, aprendiendo a crear servicios con _Docker Compose_, clusters con _Docker Swarm_ e interactuar de forma remota con _Docker machine_
+
+
+////
+COLOCA A CONTINUACION LOS OBJETIVOS
+////
+.Objetivos
+* Conocer los componentes básicos de Docker
+* Crear contenedores a partir de imágenes de Docker Hub
+* Aprender a usar `Dockerfile` para la creación de imágenes 
+* Usar _Docker Compose_ para construir entornos de contenedores
+* Usar volúmenes para almacenamiento persistente
+* Estudiar _Docker Swarm_ para el escalado de aplicaciones
+* Crear clusters con _Docker Machine_
+* Estudiar ejemplos de entornos elásticos
+
+[TIP]
+====
+Disponibles los repositorios usados en este seminario:
+
+* Ejemplos: [https://github.com/ualmtorres/usoBasicoDeDocker]
+* Catálogo de clientes: https://github.com/ualmtorres/docker_customer_catalog[https://github.com/ualmtorres/docker_customer_catalog]
+====
+// Entrar en modo numerado de apartados
+:numbered:
+
+## Conceptos básicos
+
+### Qué es Docker
+
+* Docker es una plataforma para que desarrolladores y administradores puedan desarrollar, desplegar y ejecutar aplicaciones en un entorno aislado denominado contenedor.
+* Docker permite separar las aplicaciones de la infraestructura acelerando el proceso de entrega de software a producción.
+* Proyecto open source creado en 2013 que hace uso de LXC (Linux Containers). LXC es un método de virtualización de a nivel de S.O.
+
+[TIP]
+====
+Docker permite empaquetar una aplicación con todas sus dependencias para que pueda ser ejecutada en plataformas diferentes. *El proceso de despliegue es rápido y repetible.*
+====
+
+Basta con ejecutar los tres comandos siguientes en una máquina con Docker instalado para tener una aplicación web que muestra un catálogo de clientes almacenados en una base de datos MySQL.
+
+```
+$ git clone https://github.com/ualmtorres/docker_customer_catalog.git
+$ cd docker_customer_catalog
+$ docker-compose up -d
+```
+
+.Aplicación sencilla que muestra un listado de clientes de una base de datos
+image::./CustomerCatalog.png[]
+
+Para detener el ejemplo anterior, desde la carpeta donde se ha desplegado la aplicación ejecutaremos
+
+```bash
+$ docker-compose down
+```
+
+Esto eliminará todo lo que se ha creado para este ejemplo (contenedores y red de interconexión de dichos contenedores).
+
+### Docker vs Máquinas virtuales
+
+.Docker vs Máquinas virtuales
+image::DockerVsMV.png[]
+
+* Una máquina virtual proporciona un entorno con más recursos de los que necesitan la mayoría de las aplicaciones
+* Mayor número de contenedores que de MV en el mismo hardware.
+* Los contenedores se pueden ejecutar en hosts que sean máquinas virtuales.
+
+### Ventajas 
+
+- Ligeros: Los contenedores comparten el kernel del host.
+- Intercambiables: Depliegue de actualizaciones en caliente.
+- Portables: Build local y ejecución en cualquier lugar.
+- Escalables: Aumento y distribución automática de réplicas de contenedores.
+- Apilables: Aumento del stack de servicios en caliente.
+
+[NOTE]
+====
+Docker supone una revolución en los entornos de CI/CD. Tras la actualización del repositorio de proyecto, se crean contenedores para pasar las pruebas, se construyen las nuevas imágenes y se despliega la nueva versión de la aplicación *sin parada del sistema*.
+====
+	
+### Contenedores e imágenes
+
+* Un contenedor se lanza ejecutando una imagen.
+* Una imagen es una plantilla con las instrucciones de creación de un contenedor Docker:
+    - Código
+    - Runtime
+    - Librerías
+    - Variables de entorno
+    - Archivos de configuración
+
+## Un ejemplo sencillo
+
+### Antes de nada
+
+#### Instalación: 
+
+
+https://docs.docker.com/install/#desktop[https://docs.docker.com/install/#desktop, window="_blank"]
+
+Obtenemos: 
+
+- Daemon de docker
+- Cliente de docker
+- Docker compose
+
+.Configuración de Shared Drices en Docker for Windows
+****
+A la hora de configurar volúmenes para poder ofrecer persistencia a los contenedodres, los discos locales han de ser accesibles desde los contenedores creados. Para ello hay que que configurar `Docker Desktop` desde la barra de menús.
+
+Seleccionar `Settings | Shared Drives` y seleccionar las unidades que pueden ser usadas por los contenedores.
+
+image::SharedDrives.png[]
+****
+
+#### Crear cuenta en Docker Hub
+
+Docker Hub es un registro público de imágenes (Lugar donde se almacenan imágenes): https://hub.docker.com/[https://hub.docker.com, window="_blank"] 
+
+[NOTE]
+====
+Docker Hub permite en su plan libre tener un repositorio privado de imágenes.
+También permite automatizar la construcción de imágenes y su despliegue con repositorios GitHub y Bitbucket
+====
+
+### Docker engine
+
+.Componentes de Docker Engine
+image::./DockerEngine.png[]
+
+### El Hola mundo
+
+```bash
+$ docker --version
+Docker version 18.09.2, build 6247962
+
+$ docker run hello-world
+Unable to find image 'hello-world:latest' locally 
+latest: Pulling from library/hello-world
+9bb5a5d4561a: Pull complete 
+Digest: sha256:f5233545e43561214ca4891fd1157e1c3c563316ed8e237750d59bde73361e77
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+....
+```
+
+.Registro local y Registros remotos
+****
+La creación de un contenedor se realiza a partir de una imagen. Al instalar Docker se habilitará en el sistema un registro o repositorio local de imágenes. En ese registro se almacenarán las imágenes para crear contenedores en nuestro sistema. Inicialmente el registro local de imágenes está vacío.
+
+Cuando ejecutamos `docker run` para crear y ejecutar un contenedor, Docker busca en el registro local la imagen para crear el contenedor. Si la imagen no está disponible en nuestro registro local de imágenes, Docker la descargará desde un registro remoto (normalmente Docker Hub) a nuestro registro local y desde dicho registro local se creará el contenedor.
+
+Por eso, al ejecutar el comando `docker run hello-world` anterior, Docker informó que no pudo encontrar la imagen `hello-world` en el registro local y procedió a la descarga (`pull`).
+
+```bash
+Unable to find image 'hello-world:latest' locally 
+latest: Pulling from library/hello-world
+9bb5a5d4561a: Pull complete 
+Digest: sha256:f5233545e43561214ca4891fd1157e1c3c563316ed8e237750d59bde73361e77
+Status: Downloaded newer image for hello-world:latest
+```
+
+Es posible usar otros registros diferentes a Docker Hub e incluso contar con un registro privado de imágenes. Consultar sección <<Instalar un registro de imágenes propio>>
+****
+
+### Crear un contenedor Apache
+
+```bash
+$ docker run -d -p 82:80 --name apache httpd
+```
+
+- Descarga una imagen Apache (`httpd`) si no existe localmente, lanza un contenedor y asocia el puerto 82 del host al puerto 80 del contenedor
+- `-d` lanza el contenedor en modo _dettached_ y libera la terminal
+- `-p 82:80` asocia el puerto local 82 al puerto 80 del contenedor
+- `-name apache` asigna el nombre `apache` al contenedor para que luego se más fácil interactuar con él (p.e. para ver sus logs, iniciar una sesión interactiva, eliminarlo, ...)
+
+[NOTE]
+====
+El primer puerto que aparece es el del host y el segundo el del contenedor
+====
+
+[TIP]
+====
+También podemos usar el parámetro `--name <nombre>` para darle un nombre al contenedor. De forma predeterminada, Docker asigna un nombre aleatorio a los contenedores creados. El asignar un nombre a los contenedores creados es útil para poder identificarlos más fácilmente al realizar operaciones de administración (pausa, eliminación, ...)
+====
+
+.Contenedor ejecutando Apache
+image::./Apache.png[]
+
+### Funcionamiento básico con Docker
+
+.Funcionamiento básico con Docker
+image::./FuncionamientoBasico.png[width=100%]
+
+### Imágenes interesantes de Docker
+
+En https://hub.docker.com/explore/[https://hub.docker.com/explore/, window="_blank"] se encuentran las imágenes ordenadas por popularidad. Destacamos:
+
+* alpine: Linux reducido
+* nginx: Servidor web Nginx
+* httpd: Servidor web Apache
+* ubuntu: Ubuntu
+* redis: Base de datos Redis (clave-valor)
+* mongo: Base de datos MongoDB (documentos)
+* mysql: Base de datos MySQL (relacional)
+* postgres: Base de datos PostgreSQL (relaional)
+* node: Node.js
+* registry: Registro de imágenes on-premise
+* php, elasticsearch, haproxy, wordpress, rabbitmq, python, openjdk, tomcat, jenkins, redmine, flink, spark, ...
+
+### Operaciones sobre contenedores
+
+#### Mostrar contenedores
+
+```bash
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND              CREATED             STATUS              PORTS                NAMES
+99f6727e2506        httpd               "httpd-foreground"   4 seconds ago       Up 3 seconds        0.0.0.0:82->80/tcp   apache
+```
+
+[NOTE]
+====
+Los nombres generados para los contenedores son aleatorios si no se usa el parámetro `-name` al crearlos.
+====
+
+#### Detener y reanudar contenedores
+
+Primero, obtener con `docker ps` el `CONTAINER ID` o el nombre del contenedor que queremos detener.
+
+```bash
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND              CREATED             STATUS              PORTS                NAMES
+99f6727e2506        httpd               "httpd-foreground"   4 seconds ago       Up 3 seconds        0.0.0.0:82->80/tcp   apache
+```
+
+*Detener el contenedor*
+
+Podemos detener el contenedor de dos formas, bien a partir de su nombre, que es más sencillo localizarlo, o bien a partir de su `CONTAINER ID`
+
+* Detener el contenedor mediante su nombre: `docker stop apache`
+* Detener el contenedor mediante su nombre: `docker stop 99f6727e2506`
+
+
+[CAUTION]
+====
+Al hacer `docker ps` no se muestran los contenedores que estén detenidos.
+====
+
+*Mostrar todos los contenedores, también los detenidos*
+
+```bash
+$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                        PORTS                    NAMES
+99f6727e2506        httpd               "httpd-foreground"       20 minutes ago      Exited (0) 2 minutes ago                               apache
+```
+
+*Reanudar un contenedor*
+
+```bash
+$ docker start apache
+```
+
+También se podría haber reanudado a partir de su `CONTAINER ID`
+
+```bash
+$ docker start 99f6727e2506
+```
+
+Tras reanudar el contenedor, vuelve a aparecer cuando hacemos `docker ps`
+
+```bash
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+99f6727e2506        httpd               "httpd-foreground"       9 hours ago         Up 10 seconds       0.0.0.0:82->80/tcp       apache
+```
+
+*Detener todos los contenedores en ejecución*
+
+Primero obtenenemos los identificadores de los contenedores en ejecución con `docker ps -q`. Ese comando lo podemos encerrar entre apóstrofes y pasar su resultado a otro comando en la misma línea.
+
+```bash
+$ docker stop `docker ps -q`
+```
+
+*Iniciar una lista de contenedores*
+
+```bash
+$ docker start 99f6727e2506 9811efbf6e45 178c2d03f2e7
+```
+
+#### Abrir un terminal en un contenedor
+
+Se puede iniciar especificando el nombre del contenedor (`apache`) o bien su `CONTAINER ID`. En este ejemplo se abre el terminal usando el `CONTAINER ID`
+
+```bash
+$ docker exec -it 99f6727e2506 bash
+root@99f6727e2506:/usr/local/apache2# 
+```
+
+Se inicia una sesión como `root` en el contenedor. En la terminal del contenedor podemos ejecutar comandos del sistema operativo (`ls, df -h, cat /proc/cpuinfo, ...`). La cantidad y el tipo de comandos dependerá de la imagen usada para crear el contenedor.
+
+#### Copia de datos
+
+[CAUTION]
+====
+El almacenamiento en un contenedor no es persistente. Se eliminan los datos escritos en él tras su eliminación.
+====
+
+```bash
+docker cp [OPTIONS] CONTAINER:SRC_PATH DEST_PATH|-
+docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH
+```
+
+Como ejemplo vamos a crear en nuestro host un archivo `index.html` y lo copiaremos en el contenedor para sustituir la página de inicio del servidor Apache.
+
+```
+<!-- Ejemplo de archivo index.html -->
+<html>
+  <body>
+    <h1>Docker es una maravilla</h1>
+  </body>
+</html>
+```
+
+Ahora copiamos el archivo `index.html` al contenedor con `docker cp`. Se usará el nombre del contenedor o su `CONTAINER ID` para hacer referencia al contenedor.
+
+```bash
+$ docker cp index.html apache:/usr/local/apache2/htdocs/
+```
+
+.Cambio de página de inicio
+image::./CambioIndexApache.png[]
+
+#### Eliminación de un contenedor
+
+Primero paramos el contenedor con `docker stop` y luego lo eliminamos con `docker rm`
+
+```bash
+$ docker stop apache
+$ docker rm apache
+```
+
+También se puede eliminar directamente un contenedor en ejecución forzando su eliminación
+
+`$ docker rm -f <name-or-container-id>`
+
+Al crear un nuevo contenedor a partir de la imagen `httpd` comprobamos que la página de inicio modificada anteriormente se eliminó junto al contenedor eliminado.
+
+```bash
+$ docker run -d -p 82:80 httpd
+```
+
+[TIP]
+====
+Podemos eliminar todos los contenedores creados a partir de una imagen con la secuencia de comandos siguiente (p.e. eliminar todos los contenedores creados a partir de una imagen `wordpress`)
+
+```bash
+$ docker rm -f `docker ps -a | grep "wordpress" | awk '{print $1}'`
+```
+====
+
+Para eliminar todos los contenedores parados ejecutaremos
+
+```bash
+$ docker container prune
+```
+
+### Resumen de comandos básicos para contenedores
+
+```sh
+$ docker info 
+$ docker version
+$ docker run <image> // Crea un contenedor a partir de una imagen. Si no tenemos la imagen en local, la descarga 
+$ docker run -d -p 82:80 --name my-nginx nginx: Crea un contenedor denominado my-nginx en modo deattached accesible desde el puerto 82
+$ docker stop|start <name-or-id>: Detiene|Continúa un contenedor
+$ docker ps -a: Listado de contenedores (-a muestra también los parados)
+$ docker ps -q: Listado de los ids de los contenedores
+$ docker stop `docker ps -q`: Para todos los contenedores que devuelve el subcomando `docker ps -q`
+$ docker rm <name-or-id>: Borra un contenedor si está parado
+$ docker rm -f <name-or-id>: Fuerza el borrado de un contenedor aunque esté parado
+$ docker container prune: Elimina todos los contenedores parados
+$ docker exec -it <name-or-id> sh: Abre una terminal en el contenedor 
+$ docker exec <name-or-id> ls: Ejecuta el comando ls en el contenedor para mostrar sus archivos 
+$ docker cp <name-or-id>:./dockerenv .: Copia el fichero dockerenv del contenedor en nuestro sistema de archivos local
+$ docker rm -f `docker ps -a | grep "wordpress" | awk '{print $1}'`: Eliminar todos los contenedores creados a partir de una imagen
+```
+
+[TIP]
+====
+Hay muchas _Cheat Sheets_ con resumen de los comandos principales de Docker. http://dockerlabs.collabnix.com/docker/cheatsheet/[Aquí] puedes encontrar una que está bastante bien.
+====
+
+## _Bind mounts_
+
+Un _bind mount_ permite montar un archivo o directorio de nuestro sistema en un contenedor.
+
+Dado que los contenedores no ofrecen almacenamiento persistente, todo lo que se almacene en ellos se perderá al eliminar el contenedor. A continuación se ilustran algunas situaciones habituales y cómo los _bind mounts_ resultan útiles:
+
+* Uso de contenedores para el desarrollo de aplicaciones. El código de desarrollo estará en el sistema de archivos de nuestro host y usaremos un _bind mount_ que permite ejecutar en el contenedor el código almacenado en nuestro host.
+* Uso de contenedores de bases de datos. La base de datos tiene que estar en el sistema de archivos de nuestro host y usaremos un _bind mount_ para ejecutar el contenedor con la base de datos almacenada en nuestro host.
+
+Los _bind mounts_ (se puede usar más de uno) se definen en el momento de lanzar el contenedor con el parámetro `-v`, indicando en primer lugar la ruta del sistema de archivo local y en segundo lugar la ruta del sistema de archivos del contenedor. Por ejemplo
+
+`-v /home/ubuntu/webEstaticaBasica:/usr/local/apache2/htdocs` 
+
+indica un _bind mount_ que monta la carpeta local `/home/ubuntu/webEstaticaBasica` en la carpeta `/usr/local/apache2/htdocs` del contenedor.
+
+
+
+.Ilustración de un _bind mount_ con una aplicación web sencilla
+====
+
+1. Crear una carpeta para este ejemplo y entrar en ella.
+1. Descargar este https://github.com/ualmtorres/webEstaticaBasica.git[repositorio]. Contiene una web estática sencilla con un único archivo (`index.html`)
+1. Lanzar un contenedor Apache con un _bind mount_ sobre la carpeta de la aplicación. Asignaremos el nombre `my-web` al contenedor
+
+```
+$ git clone https://github.com/ualmtorres/webEstaticaBasica.git
+$ docker run -d \
+    -p 80:80 \ <1>
+    --name my-web \ <2>
+    -v $(pwd)/webEstaticaBasica:/usr/local/apache2/htdocs \ <3>
+    httpd <4>
+```
+<1> Conservar el puerto original del contenedor
+<2> Asignar el nombre `my-web` al contenedor
+<3> Crear un _bind mount_ entre la carpeta `webEstaticaBasica` del host a la carpeta `/usr/local/apache2/htdocs` del contenedor.
+<4> Usar la imagen `httpd` de Apache
+
+El resultado sería el siguiente
+
+image::webEstaticaBasica.png[]
+====
+
+[NOTE]
+====
+Existen varias formas de expresar el directorio actual para facilitar la especificación de la ruta local.
+
+* Interfaz de comandos de Windows: `%cd%`
+* Powershell, Linux y Mac OS: `${PWD}` ó `$(pwd)`
+====
+
+.Ilustración de _bind mount_ con una base de datos MySQL
+====
+1. Crear una carpeta para este ejemplo y entrar en ella.
+1. Descargar este https://gist.githubusercontent.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f/raw/448b00c44d7102d66077a393dad555585862f923/init.sql[script de inicialización de la base de datos _Sporting Goods_]
+1. Lanzar un contenedor MySQL con dos _bind mounts_, uno para inyectar el archivo de inicialización anterior, y otro para la carpeta de datos
+
+```bash
+$ docker run -d \
+    -p 3306:3306 \ <1>
+    --name my-mysql \ <2>
+    -v $(pwd)/init.sql:/docker-entrypoint-initdb.d/init.sql \ <3>
+    -v $(pwd)/data:/var/lib/mysql \ <4>
+    -e MYSQL_ROOT_PASSWORD=secret \ <5>
+    mysql <6>
+```
+<1> Conservar los puertos del contenedor
+<2> Asignar el nombre `my-mysql` al contenedor
+<3> _bind mount_ para pasar un script SQL de inicialización de una base de datos
+<4> _bind mount_ para almacenar los datos del contenedor localmente en la carpeta `data`
+<5> Inicialización de la contraseña del `root`. Se configura inicializando una variable de entorno en el contenedor.
+<6> Usar la imagen de MySQL
+====
+
+A partir de este ejemplo, usando un cliente local de MySQL se podría acceder al contenedor directamente como `localhost`. 
+
+Si no se dispone de un cliente MySQL para ver si se ha inicializado correctamente la base de datos, se puede iniciar una sesión interactiva en el contenedor creado
+
+```bash
+$ docker exec -it my-mysql bash <1>
+
+root@3c51f13a1046:/# mysql -u root -p <2>
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 9
+Server version: 8.0.19 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases; <3>
++--------------------+
+| Database           |
++--------------------+
+| SG                 | <4>
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.01 sec)
+```
+<1> Iniciar una sesión interactiva en el contenedor MySQL
+<2> Iniciar una sesión como `root` en MySQL. Recordar la contraseña facilitada al crear el contenedor (`secret`)
+<3> Mostrar las bases de datos
+<4> Base de datos inializada por el script durante la creación del contenedor
+
+## Creación de imágenes propias
+
+### El `Dockerfile`
+
+* Para construir una imagen, se crea un `Dockerfile` con las instrucciones que especifican lo que va a ir en el entorno, dentro del contenedor (redes, volúmenes, puertos al exterior, archivos que se incluyen.
+* Indica cómo y con qué construir la imagen.
+* Conseguimos que el build de la aplicación definida en el contenedor se comporte de la misma forma en cualquier lugar que se ejecute. Hacemos que sea repetible.
+
+Ejemplo de `Dockerfile`
+
+```
+# Use an official Python runtime as a parent image
+FROM python:2.7-slim
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+ADD . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
+
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+# Define environment variable
+ENV NAME World
+
+# Run app.py when the container launches
+CMD ["python", "app.py"]
+```
+
+Fragmento de `Dockerfile` para construir una imagen con Ubuntu como base y definiendo dónde se montará un volumen externo
+
+```
+FROM ubuntu:latest
+RUN apt-get update -y
+RUN apt-get install -y python-pip python-dev
+WORKDIR /app
+ENV DEBUG=True
+EXPOSE 80
+VOLUME /data <1>
+```
+<1> Crea un punto de montaje en el contenedor. A la hora de crearlo le haremos corresponder normalmente un directorio del host 
+
+### Imágenes
+
+* Se construyen con `docker build` a partir de un `Dockerfile`
+* Se crean en un contexto (normalmente añadiendo archivos del directorio de trabajo del host a la imagen -p.e. el código fuente de la aplicación)
+* Con `FROM` (normalmente primera instrucción del `Dockerfile`) inicializamos el sistema de archivos de la imagen (p.e. si es ubuntu obtenemos el sistema de archivos de Ubuntu)
+* Muchas imágenes disponibles en Docker Hub usan Alpine (una distribución ligera de Linux) en lugar de Ubuntu, Fedora o CentOS, debido a su menor tamaño
+* Cada instrucción del `Dockerfile` genera una nueva capa (con la diferencia) en ese sistema de archivos
+* Al hacer `build` las capas existentes en el registro local no se vuelven a crear
+
+[NOTE]
+====
+Una https://hub.docker.com/r/library/alpine/tags/[imagen comprimida de Alpine] está en torno a los 2 MB, mientras que una https://hub.docker.com/r/library/ubuntu/tags/[imagen comprimida de Ubuntu] está entre 40 y 80 MB
+====
+
+### Ejemplo de contenedor para aplicaciones web en PHP
+
+Vamos a construir un contenedor que incluya de forma estática una aplicación (p.e. la última versión de la aplicación). El proceso a seguir es:
+
+1. Creación de la aplicación.
+1. Creación del `Dockerfile` para generación de la imagen.
+1. Generación de la imagen.
+
+A partir de una carpeta nueva crearemos lo siguiente:
+
+* Archivo `Dockerfile`
+* Carpeta `html` con los scritps de nuestra aplicación
+* Archivo `html/index.php` con el código de nuestra aplicación
+
+El `Dockerfile`
+
+```
+FROM ualmtorres/phalcon-apache-ubuntu
+
+ADD html /var/www/html
+
+EXPOSE 80
+```
+
+Archivo `html/index.php` de ejemplo
+
+```
+<?php
+  echo "Hola desde Docker";
+?>
+```
+
+#### Construcción de la imagen. 
+
+`$ docker build -t pruebaphp .`
+
+Con `-t` definimos una etiqueta o nombre de la imagen. Al construir la imagen pasa a nuestro registro local.
+
+#### Listado de imágenes locales
+
+```bash
+$ docker image ls
+REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
+pruebaphp              latest              152781e32617        14 hours ago        245MB
+```
+
+#### Creación de un contenedor a partir de la imagen
+
+`$ docker run -d -p 83:80 pruebaphp`
+
+Un posible inconveniente que podemos encontrar en este ejemplo es que la aplicación va incluida en la propia imagen, por lo que para actualizar la aplicación deberemos crear una nueva imagen, y después crear un nuevo contenedor a partir de ella desechando el contenedor anterior.
+
+[NOTE]
+====
+A la hora de distribuir y actualizar aplicaciones podemos incluir la aplicación en la imagen. Con un ciclo de CI/CD tendríamos la aplicación actualizada al actualizar su repositorio.
+====
+
+### Ejemplo de contenedor con volumen externo
+
+En este ejemplo la aplicación la tendremos aparte en un volumen externo accesible por el contenedor. De esta forma, si nuestra aplicación está vinculada a un repositorio, la actualización de la aplicación se realiza descargando la última versión del repositorio, manteniendo intacto el contenedor.
+
+La forma de usar volúmenes con `Dockerfile` consiste en:
+
+1. Añadir en el `Dockerfile` la lista de carpetas que se montarán con volúmenes externos
+1. Al crear el contenedor indicar el punto de montaje en el host remoto en forma de ruta absoluta
+
+El `Dockerfile`
+
+```
+FROM ualmtorres/phalcon-apache-ubuntu
+
+VOLUME /var/www/html
+
+EXPOSE 80
+```
+
+```bash 
+$ docker run -d -p 83:80 -v=/Users/manolo/Documents/Desarrollo/SeminarioDocker/phpsimple/html:/var/www/html pruebaphp
+```
+
+[TIP]
+====
+También podemos hacer uso de la evaluación de órdenes con apóstrofes para obtener el path actual y añadirle sólo la carpeta `html`.
+
+```bash 
+$ docker run -d -p 83:80 -v=`pwd`/html:/var/www/html pruebaphp
+```
+====
+
+### Descarga y subida de imágenes a Docker Hub
+
+* Etiquetar la imagen antes de subirla a Docker Hub
+
+```
+$ docker tag phpprueba ualmtorres/phpprueba:v0
+```
+
+* Subida de la imagen a Docker Hub
+
+```bash
+docker push <usuario>/<image>
+```
+
+* Al hacer `push` las capas que ya estén subidas no se vuelven a subir. En cuanto una instrucción del `Dockerfile` cambia una capa, invalida al resto y hay que volver a generar las instrucciones de las capas restantes. Por tanto, colocaremos antes en el `Dockerfile` lo que menos cambie.
+* Al hacer `pull` sólo se descargan las capas nuevas.
+* Si cambiamos en el host archivos de los que se incluyen en la imagen se genera una capa nueva invalidando la caché.
+
+```bash
+$ docker pull wordpress
+$ docker run -d -p 80:80 --name my_wordpress wordpress 
+```
+
+### Resumen de comandos básicos para imágenes
+
+```bash
+$ docker login
+$ docker run -d ngninx
+$ docker pull <image>
+$ docker image ls: Lista imágenes locales
+$ docker inspect <image>: Propiedades de una imagen
+$ docker image rm <image>: Elimina una imagen local
+```
+
+## Aplicaciones con varios contenedores
+
+* Docker Compose es una herramienta para definir y ejecutar aplicaciones Docker con varios contenedores.
+* Usaremos un archivo `docker-compose.yml` para configurar los _servicios_ de la aplicación. Los servicios son las partes de la aplicación (p.e. un servicio para el almacenamiento de los datos y otro para el front-end)
+* En un mismo host podemos tener varios entonos aislados. Compose usa nombres de proyecto para mantener a los entornos aislados. De forma predeterminada se usa el nombre del directorio desde donde se lanza la aplicación.
+* `docker-compose --version` para obtener la versión y saber si está instalado.
+* Instalación desde https://docs.docker.com/compose/install[https://docs.docker.com/compose/install]
+
+### Flujo de trabajo básico con Docker Compose
+
+1. Crear el archivo `docker-compose.yml` con los servicios de la aplicación (p.e. php y mysql)
+2. Construir y lanzar el entorno en modo _dettached_ con `docker-compose up -d`
+3. Echar abajo el entorno con `docker-compose down`
+
+### Comandos básicos para Docker Compose
+
+```sh
+$ docker-compose up -d      Construye y lanza el entorno en modo dettached
+$ docker-compose pull       Descarga las imágenes pero no inicia los contenedores
+$ docker-compose rm [-fs]   Borra los contedores parados. Con -fs los detiene y fuerza su borrado
+```
+
+## Ejemplo: Aplicación web (PHP) con soporte de Base de datos (MySQL)
+
+* Aplicación que muestra un listado de clientes almacenado en una base de datos MySQL.
+* Podemos distribuirla con un repositorio que incluya una carpeta `html` con la aplicación PHP.
+* Al iniciar el servicio MySQL se ejecutará un script de inicialización de la base de datos.
+* Usaremos volúmenes externos para la base de datos y para la aplicación web para asegurar la persistencia de los cambios.
+
+Comencemos clonando el repositorio de la aplicación:
+
+```bash
+$ git clone https://github.com/ualmtorres/customer_catalog.git
+```
+
+En ese repositorio se encuentra:
+
+* Un archivo `docker-compose.yml` que configura dos serivicios. Un servicio para almacenamiento de datos con MySQL y otro servicio para el front-end PHP de la aplicación. 
+* Una carpeta `html` con la aplicación. Esta carpeta será la que monte el servicio front-end, de forma que la aplicación no está almacenada en el contenedor.
+* Un script SQL `init.sql` que inicializa la base de datos de nuestra aplicación. La base de datos se almacena en nuestro host, garantizando almacenamiento persistente.
+
+`docker-compose.yml`
+
+```yaml
+version: '2'
+services:
+  mysql:
+    container_name: my_mysql
+    restart: always
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: 'secret' # TODO: Change this
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data:/var/lib/mysql <1>
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql <2>
+  php:
+    container_name: my_php
+    restart: always
+    image: ualmtorres/phalcon-apache-ubuntu
+    ports:
+      - "80:80"
+    volumes:
+      - ./html:/var/www/html <3>
+```
+<1> Montar una carpeta `data` de nuestro host en la ruta en la que el servicio `mysql` almacena la base de datos
+<2> La imagen de MySQL ejecutará al inicio cualquier script que encuentre en `/docker-entrypoint-initdb.d/
+<3> Montar una carpeta `html` de nuestro host en la ruta en la que el servicio `php` almacena la aplicación
+
+`index.php` https://gist.githubusercontent.com/ualmtorres/0c9ba76eb22a35e328dbc322e6c100d1/raw/812f0db2da07037416db8967130eb16b16b5b88e/index.php[Descargar index.php]
+
+++++
+<script src="https://gist.github.com/ualmtorres/0c9ba76eb22a35e328dbc322e6c100d1.js"></script>
+++++
+
+`init.sql` https://gist.githubusercontent.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f/raw/448b00c44d7102d66077a393dad555585862f923/init.sql[Descargar init.sql]
+
+++++
+<script src="https://gist.github.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f.js"></script>
+++++
+
+.Aplicación web PHP que muestra listado de clientes almacenados en MySQL
+image::./CustomerCatalog.png[width=100%]
+
+
+
+## Otras cosas interesantes
+
+### Microservicios y contenedores
+
+Con microservicios: 
+
+* Establecemos un contrato, normalmente mediante una API REST, versionada para no romper funcionalidad a usuarios anteriores
+* Ocupan un tamaño reducido y suelen realizar una tarea muy concreta
+    - Autenticación, 
+    - API REST. Toda la API vs cada endpoint
+    - Estadísticas consumo de recursos
+    - Exportar salida a central de logs
+    - ...
+* Dockerizar con cabeza
+    - Comenzamos pasando todo nuestro sistema o MV a un contenedor Docker. Con sólo eso ya conseguimos ejecutar nuestra sistema en distintas máquinas con distintos SO y configuraciones. 
+    - No intentar pasar de una vez de aplicación monlítica a microservicios diminutos
+
+image::./KeepCalmAndUseDocker.png[width=100%]
+
+### El ecosistema Docker 
+
+image::./DockerEcosystem.png[width=100%]
+
+### Instalar un registro de imágenes propio
+
+Es posible tener un registro propio para imágenes por cuestiones de seguridad y confidencialidad. Veamos cómo crear un registro propio mediante contenedores (uno para el registro en sí y otro cono Web UI).
+
+El ejemplo será obtener una imagen Alpine de Docker Hub y subirla a nuestro propio registro
+
+```bash
+// En el servidor (p.e. 192.168.65.103)
+$ docker run -d -p 5000:5000 --restart always --name registry registry:2
+$ docker run \
+  -d \
+  -e ENV_DOCKER_REGISTRY_HOST=192.168.65.103 \
+  -e ENV_DOCKER_REGISTRY_PORT=5000 \
+  -p 8080:80 \
+  konradkleine/docker-registry-frontend:v2
+  
+// En nuestro equipo
+$ docker pull alpine <1>
+$ docker image list | grep alpine <2> 
+$ docker tag 3e640a41799a 192.168.65.103:5000/alpine <3>
+$ docker push 192.168.65.103:5000/alpine <4>
+```
+<1> Descargar una imagen de prueba de Alpine al registro local
+<2> Obtener el identificador de la imagen Alpine descargada (p.e. `3e640a41799a`)
+<3> La imagen se etiqueta añadiéndole como prefijo host:puerto de nuestro registro
+<4> Subida de la imagen al registro
+
+image::./RegistroPropio.png[]
+
+### Conexión a daemons Docker remotos
+
+Util para conectarnos desde nuestro equipo al Docker de producción o al de  pruebas
+
+* Crear en local un archivo de variables de entorno (p.e. `DockerProyectoBrainstorm.sh`)
+
+```bash
+export DOCKER_TLS_VERIFY=1
+export DOCKER_CERT_PATH="<ruta completa de certificado>"
+export DOCKER_HOST="tcp://<IP o nombre DNS>:443"
+```
+
+* Después, `source DockerProyectoBrainstorm.sh` y ¡¡Estamos conectados!!
+* Si la conexión fuera abierta, indicaríamos `export DOCKER_TLS_VERIFY=0`. 
+
+### Uso de HAProxy
+
+```
+docker-compose.yml
+version: '3'
+services:
+  php:
+    image: ualmtorres/phalcon-apache-ubuntu
+    ports:
+      - "80"
+    environment:
+     - SERVICE_PORTS=80 <1>
+    volumes:
+      - ./html:/var/www/html
+    deploy:
+      replicas: 6
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+    networks:
+      - webnet
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - webnet
+  proxy: <2>
+    image: dockercloud/haproxy
+    depends_on:
+      - php <3>
+    environment:
+      - BALANCE=leastconn <4>
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+    networks:
+      - webnet
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+networks:
+  webnet:
+```
+<1> Cambio en la configuración de puertos para usar HAProxy
+<2> Servicio `proxy`
+<3> No crear el servicio `proxy` hasta que no se haya creado el `php`
+<4> Usa la política de balanceo _least connections_ en lugar de la _round robin_ predeterminada

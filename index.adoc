@@ -10,9 +10,6 @@ Codificación, idioma, tabla de contenidos, tipo de documento
 :imagesdir: ./images
 :linkattrs:
 
-
-
-
 ////
 Nombre y título del trabajo
 ////
@@ -596,110 +593,134 @@ VOLUME /data <1>
 Una https://hub.docker.com/r/library/alpine/tags/[imagen comprimida de Alpine] está en torno a los 2 MB, mientras que una https://hub.docker.com/r/library/ubuntu/tags/[imagen comprimida de Ubuntu] está entre 40 y 80 MB
 ====
 
-### Ejemplo de contenedor para aplicaciones web en PHP
+### Distribución y ejecución de aplicaciones mediante `Dockerfile`
 
-Vamos a construir un contenedor que incluya de forma estática una aplicación (p.e. la última versión de la aplicación). El proceso a seguir es:
+Supongamos el siguiente escenario. Contamos con el código de una aplicación disponible en un repositorio. Con la ayuda de `Dockerfile` podemos crear una imagen local con todo el software y configuración que necesita la aplicación para ejecutarse y crear después un contenedor a partir de dicha imagen. El código de la aplicación podrá ser copiado directamete al contenedor o se podrá montar un volumen en el sistema de archivos del host de forma que se pueda editar el código y no se pierdan los cambios al eliminar el contenedor.
 
-1. Creación de la aplicación.
-1. Creación del `Dockerfile` para generación de la imagen.
-1. Generación de la imagen.
+Por tanto, una buena forma de distribuir una aplicación puede ser incluir un `Dockerfile` con la configuración de software que necesita para ejecutarse junto con el código de la aplicación.
 
-A partir de una carpeta nueva crearemos lo siguiente:
+El `Dockerfile` siguiente contiene los pasos a seguir para:
 
-* Archivo `Dockerfile`
-* Carpeta `html` con los scritps de nuestra aplicación
-* Archivo `html/index.php` con el código de nuestra aplicación
+* Crear una imagen con Apache, PHP y el framework Phalcon.
+* Incluir el código de la aplicación en el contenedor.
+* Exponer el puerto deseado.
+* Crear un punto de montaje en el contenedor. Este punto de montaje se podrá conectar al sistema de archivos del host con un _bind mount_ al iniciar el contenedor.
 
-El `Dockerfile`
+```
+FROM ualmtorres/phalcon-apache-ubuntu <1>
 
+ADD webEstaticaBasica /var/www/html <2>
+
+EXPOSE 80 <3>
+
+VOLUME /var/www/html <4>
+```
+<1> Imagen de base. Incluye Apache, PHP y el framework Phalcon
+<2> Añade el código de la carpeta `webEstaticaBasica` del sistema de archivos local a la carpeta `/var/www/html` del contenedor
+<3> Informa del puerto en el que escucha el contenedor
+<4> Ofrece la carpeta `/var/www/html` como punto de montaje
+
+
+[NOTE]
+====
+Si se quieren ofrecer varios puntos de montaje se hará a través de un array.
+
+```
+VOLUME ["/var/www/html", "/var/log/apache2", "/etc/apache2"]
+```
+
+Si se quieren exponer varios puertos se hará enumerando la lista de puertos
+
+```
+EXPOSE 80 443
+```
+====
+
+[TIP]
+====
+Configura tus propias imagen de base siguiendo el ejemplo del anexo <<Configuración de imágenes de base>>
+====
+
+En un caso sencillo, podríamos reducir a que una aplicación está formada su base de código y el entorno en el que se ejecuta. El código de esa aplicación posiblemente esté en un repositorio 
+Vamos a construir un contenedor a partir del código del repositorio y lo ofrezca al host como un volumen. El proceso a seguir es:
+
+1. Descargar el repositorio del código de la aplicación.
+
++
+```
+$ git clone https://github.com/ualmtorres/webEstaticaBasica.git
+```
+
+1. Creación del `Dockerfile` para la construcción de la imagen.
+
++
 ```
 FROM ualmtorres/phalcon-apache-ubuntu
 
-ADD html /var/www/html
+ADD index.html /var/www/html
 
 EXPOSE 80
+
+VOLUME /var/www/html
 ```
 
-Archivo `html/index.php` de ejemplo
++
+[TIP]
+====
+Es buena idea incluir en el repositorio de la aplicación el `Dockerfile`. Así se contará tanto con el código de la aplicación como con las instrucciones (en forma de `Dockerfile`) para crear el contenedor de la aplicación con todo lo necesario.
+====
 
-```
-<?php
-  echo "Hola desde Docker";
-?>
-```
+1. <<Construcción de la imagen>>
 
-#### Construcción de la imagen. 
 
-`$ docker build -t pruebaphp .`
+#### Construcción de la imagen
 
-Con `-t` definimos una etiqueta o nombre de la imagen. Al construir la imagen pasa a nuestro registro local.
+El comando `docker build` crea una imagen nueva usando las instrucciones del `Dockerfile`.
+
+`$ docker build -t ualmtorres/web-estatica-basica:v0 .`
+
+* Con `-t` definimos una etiqueta o nombre de la imagen. Al construir la imagen pasa a nuestro registro local.
+* Con `.` indicamos a Docker que utilice el directorio actual como contexto para hace el _build_
+
+[TIP]
+====
+Es buena práctica crear etiquetas con el nombre de usuario el Docker Hub, el nombre de la imagen y la versión.
+====
 
 #### Listado de imágenes locales
 
 ```bash
-$ docker image ls
-REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
-pruebaphp              latest              152781e32617        14 hours ago        245MB
+$ docker image list
+REPOSITORY                                   TAG                 IMAGE ID            CREATED             SIZE
+ualmtorres/web-estatica-basica               v0                  ed27de86aa03        30 seconds ago      309MB
 ```
 
-#### Creación de un contenedor a partir de la imagen
+### Ejecución de la aplicación a partir de la imagen creada
 
-`$ docker run -d -p 83:80 pruebaphp`
+Usaremos un _bind mount_ para poder modificar el código de la aplicación y poder conservar los cambios. Posteriormente, podremos subir los cambios de la aplicación al repositorio.
 
-Un posible inconveniente que podemos encontrar en este ejemplo es que la aplicación va incluida en la propia imagen, por lo que para actualizar la aplicación deberemos crear una nueva imagen, y después crear un nuevo contenedor a partir de ella desechando el contenedor anterior.
+```bash 
+$ docker run -d \
+    -p 83:80 \
+    --name webEstaticaBasica \
+    -v $(pwd):/var/www/html \
+    ualmtorres/web-estatica-basica:v0
+```
 
 [NOTE]
 ====
 A la hora de distribuir y actualizar aplicaciones podemos incluir la aplicación en la imagen. Con un ciclo de CI/CD tendríamos la aplicación actualizada al actualizar su repositorio.
 ====
 
-### Ejemplo de contenedor con volumen externo
+### Subida de imágenes a Docker Hub
 
-En este ejemplo la aplicación la tendremos aparte en un volumen externo accesible por el contenedor. De esta forma, si nuestra aplicación está vinculada a un repositorio, la actualización de la aplicación se realiza descargando la última versión del repositorio, manteniendo intacto el contenedor.
-
-La forma de usar volúmenes con `Dockerfile` consiste en:
-
-1. Añadir en el `Dockerfile` la lista de carpetas que se montarán con volúmenes externos
-1. Al crear el contenedor indicar el punto de montaje en el host remoto en forma de ruta absoluta
-
-El `Dockerfile`
-
-```
-FROM ualmtorres/phalcon-apache-ubuntu
-
-VOLUME /var/www/html
-
-EXPOSE 80
-```
-
-```bash 
-$ docker run -d -p 83:80 -v=/Users/manolo/Documents/Desarrollo/SeminarioDocker/phpsimple/html:/var/www/html pruebaphp
-```
-
-[TIP]
-====
-También podemos hacer uso de la evaluación de órdenes con apóstrofes para obtener el path actual y añadirle sólo la carpeta `html`.
-
-```bash 
-$ docker run -d -p 83:80 -v=`pwd`/html:/var/www/html pruebaphp
-```
-====
-
-### Descarga y subida de imágenes a Docker Hub
-
-* Etiquetar la imagen antes de subirla a Docker Hub
-
-```
-$ docker tag phpprueba ualmtorres/phpprueba:v0
-```
-
-* Subida de la imagen a Docker Hub
+Hasta ahora la imagen creada está en el repositorio local de imágenes. Para subirla a un repositorio remoto, como Docker Hub, primero iniciaremos sesión con `docker login` y después podremos subir la imagen con el comando siguiente
 
 ```bash
-docker push <usuario>/<image>
+docker push <user>/<image>:<tag>
 ```
 
-* Al hacer `push` las capas que ya estén subidas no se vuelven a subir. En cuanto una instrucción del `Dockerfile` cambia una capa, invalida al resto y hay que volver a generar las instrucciones de las capas restantes. Por tanto, colocaremos antes en el `Dockerfile` lo que menos cambie.
+* Al hacer `push` las capas que ya estén subidas no se vuelven a subir. En cuanto una instrucción del `Dockerfile` cambia una capa, invalida al resto y se volcerán a crear las capas restantes. Por tanto, colocaremos antes en el `Dockerfile` lo que menos cambie.
 * Al hacer `pull` sólo se descargan las capas nuevas.
 * Si cambiamos en el host archivos de los que se incluyen en la imagen se genera una capa nueva invalidando la caché.
 
@@ -712,7 +733,7 @@ $ docker run -d -p 80:80 --name my_wordpress wordpress
 
 ```bash
 $ docker login
-$ docker run -d ngninx
+$ docker run -d nginx
 $ docker pull <image>
 $ docker image ls: Lista imágenes locales
 $ docker inspect <image>: Propiedades de una imagen
@@ -722,8 +743,8 @@ $ docker image rm <image>: Elimina una imagen local
 ## Aplicaciones con varios contenedores
 
 * Docker Compose es una herramienta para definir y ejecutar aplicaciones Docker con varios contenedores.
-* Usaremos un archivo `docker-compose.yml` para configurar los _servicios_ de la aplicación. Los servicios son las partes de la aplicación (p.e. un servicio para el almacenamiento de los datos y otro para el front-end)
-* En un mismo host podemos tener varios entonos aislados. Compose usa nombres de proyecto para mantener a los entornos aislados. De forma predeterminada se usa el nombre del directorio desde donde se lanza la aplicación.
+* De forma predeterminada, usaremos un archivo `docker-compose.yml` para configurar los _servicios_ de la aplicación. Los servicios son los componentes de la aplicación (p.e. un servicio para el almacenamiento de los datos y otro para el front-end)
+* En un mismo host podemos tener varios entornos aislados. Compose usa nombres de proyecto para mantener a los entornos aislados. De forma predeterminada, Compose usa el nombre del directorio desde donde se lanza la aplicación.
 * `docker-compose --version` para obtener la versión y saber si está instalado.
 * Instalación desde https://docs.docker.com/compose/install[https://docs.docker.com/compose/install]
 
@@ -733,6 +754,23 @@ $ docker image rm <image>: Elimina una imagen local
 2. Construir y lanzar el entorno en modo _dettached_ con `docker-compose up -d`
 3. Echar abajo el entorno con `docker-compose down`
 
+[IMPORTANT]
+====
+El comando `docker-compose down` necesita el archivo `docker-compose.yml` para echar abajo el entorno. Por tanto, siempre tiene que ejecutarse en el directorio donde se lanzó `docker-compose up`. Sin embargo, en ocasiones cerraremos la ventana desde donde se lanzó el entorno y necesitamos alguna forma de poder recordar dónde estaba.
+
+El script siguiente devuelve los nombres de directorio desde los que se hayan lanzado todos los entornos de Compose que se tengan en ejecución.
+
+```
+docker ps --filter "label=com.docker.compose.project" -q |
+    xargs docker inspect \
+    --format='{{index .Config.Labels "com.docker.compose.project"}}'|
+    sort |
+    uniq
+```
+
+A partir de ahí, se trata de buscar en el sistema de archivos del host los nombres de directorio devueltos.
+====
+
 ### Comandos básicos para Docker Compose
 
 ```sh
@@ -741,7 +779,7 @@ $ docker-compose pull       Descarga las imágenes pero no inicia los contenedor
 $ docker-compose rm [-fs]   Borra los contedores parados. Con -fs los detiene y fuerza su borrado
 ```
 
-## Ejemplo: Aplicación web (PHP) con soporte de Base de datos (MySQL)
+### Ejemplo: Aplicación web (PHP) con soporte de Base de datos (MySQL)
 
 * Aplicación que muestra un listado de clientes almacenado en una base de datos MySQL.
 * Podemos distribuirla con un repositorio que incluya una carpeta `html` con la aplicación PHP.
@@ -751,13 +789,13 @@ $ docker-compose rm [-fs]   Borra los contedores parados. Con -fs los detiene y 
 Comencemos clonando el repositorio de la aplicación:
 
 ```bash
-$ git clone https://github.com/ualmtorres/customer_catalog.git
+$ git clone https://github.com/ualmtorres/docker_customer_catalog.git
 ```
 
 En ese repositorio se encuentra:
 
-* Un archivo `docker-compose.yml` que configura dos serivicios. Un servicio para almacenamiento de datos con MySQL y otro servicio para el front-end PHP de la aplicación. 
-* Una carpeta `html` con la aplicación. Esta carpeta será la que monte el servicio front-end, de forma que la aplicación no está almacenada en el contenedor.
+* Un archivo `docker-compose.yml` que configura dos servicios: un servicio para almacenamiento de datos con MySQL y otro servicio para la aplicación PHP. 
+* Una carpeta `html` con la aplicación. Esta carpeta será la que monte la aplicación PHP de forma que el código de la aplicación no esté almacenada en el contenedor.
 * Un script SQL `init.sql` que inicializa la base de datos de nuestra aplicación. La base de datos se almacena en nuestro host, garantizando almacenamiento persistente.
 
 `docker-compose.yml`
@@ -766,7 +804,7 @@ En ese repositorio se encuentra:
 version: '2'
 services:
   mysql:
-    container_name: my_mysql
+    container_name: mysql <1>
     restart: always
     image: mysql:5.7
     environment:
@@ -774,39 +812,487 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./data:/var/lib/mysql <1>
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql <2>
+      - ./data:/var/lib/mysql <2>
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql <3>
   php:
-    container_name: my_php
+    container_name: php
     restart: always
     image: ualmtorres/phalcon-apache-ubuntu
     ports:
       - "80:80"
     volumes:
-      - ./html:/var/www/html <3>
+      - ./html:/var/www/html <4>
 ```
-<1> Montar una carpeta `data` de nuestro host en la ruta en la que el servicio `mysql` almacena la base de datos
-<2> La imagen de MySQL ejecutará al inicio cualquier script que encuentre en `/docker-entrypoint-initdb.d/
-<3> Montar una carpeta `html` de nuestro host en la ruta en la que el servicio `php` almacena la aplicación
+<1> Nombre del contenedor. Este será el nombre que usará el contendor de la aplicación PHP para poder acceder a este contenedor
+<2> Montar una carpeta `data` de nuestro host en la ruta en la que el servicio `mysql` almacena la base de datos
+<3> La imagen de MySQL ejecutará al inicio cualquier script que encuentre en `/docker-entrypoint-initdb.d/`
+<4> Montar una carpeta `html` de nuestro host en la ruta en la que el servicio `php` almacena la aplicación
 
-`index.php` https://gist.githubusercontent.com/ualmtorres/0c9ba76eb22a35e328dbc322e6c100d1/raw/812f0db2da07037416db8967130eb16b16b5b88e/index.php[Descargar index.php]
+Para lanzar la aplicación multicontenedor ejecutaremos el comando
 
-++++
-<script src="https://gist.github.com/ualmtorres/0c9ba76eb22a35e328dbc322e6c100d1.js"></script>
-++++
+```
+$ docker-compose up -d
+```
 
-`init.sql` https://gist.githubusercontent.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f/raw/448b00c44d7102d66077a393dad555585862f923/init.sql[Descargar init.sql]
+Esto creará un contenedor para cada servicio y una red para que los contenedores de los servicios se puedan comunicar entre sí. El nombre de la red vendrá determinado por el nombre del directorio desde donde se lance Docker Compose. Los contenedores podrán referenciarse unos a otros por el nombre del contenedor.
+
+Para probar esto, abrir una sesión interactiva en el contenedor PHP y hacer `ping mysql`
+
+[source, bash]
+----
+$ docker exec -it php bash
+
+root@61d202a9f1bf:/app# ping mysql <1>
+
+PING mysql (192.168.32.3) 56(84) bytes of data.
+64 bytes from mysql.docker_customer_catalog_default (192.168.32.3): icmp_seq=1 ttl=64 time=0.132 ms
+64 bytes from mysql.docker_customer_catalog_default (192.168.32.3): icmp_seq=2 ttl=64 time=0.185 ms
+64 bytes from mysql.docker_customer_catalog_default (192.168.32.3): icmp_seq=3 ttl=64 time=0.120 ms
+----
+<1> Se usa el nombre del contenedor asignado en `docker-compose.yml` para referenciarlo
+
+[IMPORTANT]
+====
+Aunque en el `docker-compose.yml` es posible asignar un nombre diferente al contenedor que al servicio al que pertenece, se recomienda usar el mismo nombre. *Los contenedores desplegados con  Docker Compose realmente usan el nombre de los contenedores para referenciarse unos a otros. Por eso, para evitar consfusiones, mejor usar el mismo nombre para servicio y para contenedor.*
+====
+
+.Archivo `index.php` con el código de la aplicación
+====
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Web PHP-MySQL con Docker</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+</head>
+<body>
+  <div class = "container">
+    <div class="jumbotron">
+      <h1 class="display-4">Docker app</h1>
+      <p class="lead">Ejemplo de aplicacion PHP y MySQL con contenedores</p>
+      <hr class="my-4">
+      <p>Usa un contenedor para Apache/PHP y otro para MySQL con almacenamiento de aplicación y de datos en volúmenes externos</p>
+    </div>
+    <table class="table table-striped table-responsive">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Credit Rating</th>
+          <th>Address</th>
+          <th>City</th>
+          <th>State</th>
+          <th>Country</th>
+          <th>Zip</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $conexion = mysql_connect("mysql", "root", "secret"); <1>
+        mysql_select_db("SG", $conexion);
+
+        $cadenaSQL = "select * from s_customer";
+        $resultado = mysql_query($cadenaSQL);
+
+        while ($fila = mysql_fetch_object($resultado)) {
+         echo "<tr><td> " .$fila->name . 
+         "</td><td>" . $fila->credit_rating .
+         "</td><td>" . $fila->address .
+         "</td><td>" . $fila->city .
+         "</td><td>" . $fila->state .
+         "</td><td>" . $fila->country .
+         "</td><td>" . $fila->zip_code .
+         "</td></tr>";
+       }
+
+       ?>
+     </tbody>
+   </table>
+ </div>
+ <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+ <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+</body>
+</html>
+----
+<1> El nombre con el que se accede a la base de datos MySQL es el nombre del contenedor usado en `docker-compose.yml`
+====
+
+Archivo `init.sql` para inicializar la base de datos https://gist.githubusercontent.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f/raw/448b00c44d7102d66077a393dad555585862f923/init.sql[Descargar init.sql]
 
 ++++
 <script src="https://gist.github.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f.js"></script>
 ++++
 
+La aplicación quedará disponible
+
 .Aplicación web PHP que muestra listado de clientes almacenados en MySQL
 image::./CustomerCatalog.png[width=100%]
+
+## Desarrollo con Docker Compose
+
+A la hora de desarrollar una aplicación con varios contenedores que tienen que trabajar de forma coordinada (p.e. una aplicación de frontend y backend) usaremos Docker Compose creando un servicio para cada componente (p.e. uno para el front y otro para la API). Cada uno de esos componentes es susceptible de empaquetarse como una imagen Docker. Por tanto, cada componente debería incluir su `Dockerfile` para construir su imagen correspondiente. Así, la estructura recomendada para desarrollar con Docker Compose podría ser algo parecido a esto:
+
+```
+.
+├── docker-compose.yml <1>
+├── servicio-1 <2>
+│   ├── Dockerfile <3>
+│   └── Base de código del servicio 1
+├── servicio-2
+│   ├── Dockerfile
+│   └── Base de código del servicio 2
+...
+└── servicio-n
+    ├── Dockerfile
+    └── Base de código del servicio n
+```
+<1> Archivo con la configuración de ejecución
+<2> Directorio para cada servicio/componente
+<3> Instrucciones para la creación de la imagen del servicio
+
+Para ilustrar esto usaremos un ejemplo ficticio que desarrolle una API con calificaciones y un front para presentar los datos de la API. A continuación se muestran los pasos:
+
+### Desarrollo de la API
+
+Se trata de una API en PHP con Phalcon. La API contiene los datos directamente en JSON para no añadir otro componente de bases de datos al ejemplo, conseguir un ejemplo más sencillo y no perdernos en los detalles. El objetivo es ver cómo desarrollar con Docker Compose.
+
+1. Desde el directorio del proyecto crear una carpeta `api` para la API.
+1. Crear un archivo https://gist.github.com/ualmtorres/581e7f6f15cda4d9c7e2b04c4fca3486[`.htaccess`] que es necesario para rescribir las rutas en las peticiones a la API
+1. Crear un archivo https://gist.github.com/ualmtorres/068ce3477fbee09276a69e37b8cc664d[`index.php`] con el código de la API.
+1. Crear el https://gist.github.com/ualmtorres/efebdfef3bb159ffd55f3a4321fef443[`Dockerfile`] con las instrucciones para crear la imagen de la API
+
++
+[source,dockerfile]
+----
+FROM ualmtorres/phalcon-apache-ubuntu <1>
+
+ADD . /var/www/html <2>
+
+VOLUME /var/www/html <3>
+
+EXPOSE 80 <4>
+----
+<1> Imagen de base para la ejecución de la API. Incluye Apache, PHP y el framework Phalcon
+<2> Incluir el código de la API en la carpeta de publicación de Apache
+<3> Crear un punto de montaje para que se pueda tener la base de código fuera del contenedor
+<4> Indicar el puerto por el que escucha el contenedor (80 por ser Apache)
+
+1. Crear en el directorio de la aplicación (un nivel por encima de `api`) el archivo https://gist.github.com/ualmtorres/dc5c2ad42f3bf5d3f625f9234c871cbf[`docker-compose.yml`] para poder ejecutar la API.
+
++
+[source,yaml]
+----
+version: '2'
+services:
+  calificaciones-api:
+    container_name: calificaciones-api
+    restart: always
+    image: ualmtorres/phalcon-apache-ubuntu <1>
+    ports:
+      - "80:80"
+    volumes:
+      - ./api:/var/www/html <2>
+----
+<1> Imagen base para ejecutar la API
+<2> Volumen en el host montado en el directorio `/var/www/html` del contenedor
+
+Si desplegamos el `docker-compose.yml` veremos la API ejecutándose en el puerto 80
+
+image::calificaciones-api.png[]
+
+### Desarrollo del front
+
+1. Desde el directorio del proyecto crear una carpeta `front` para el código del front.
+1. Crear un archivo https://gist.github.com/ualmtorres/52811ce82117ca10bf2d58f53d54ccf4[`index.php`] con el código del front.
+1. Crear el https://gist.github.com/ualmtorres/eeb473aec54e307d5bd73f49e72b5ec4[`Dockerfile`] con las instrucciones para crear la imagen del front
+
++
+[source,dockerfile]
+----
+FROM php:7.2-apache <1>
+
+ADD . /var/www/html <2>
+
+VOLUME /var/www/html <3>
+
+EXPOSE 80
+----
+<1> Imagen de base para la ejecución del front. Incluye Apache y PHP
+<2> Incluir el código del front en la carpeta de publicación de Apache
+<3> Crear un punto de montaje para que se pueda tener la base de código fuera del contenedor
+<4> Indicar el puerto por el que escucha el contenedor (80 por ser Apache)
+
+Modificar el archivo `docker-compose.yml` (un nivel por encima de `front`)  añadiéndole el servicio para poder ejecutar el front.
+
+[source,yaml]
+----
+version: '2'
+services:
+  calificaciones-api:
+    container_name: calificaciones-api
+    restart: always
+    image: ualmtorres/phalcon-apache-ubuntu
+    ports:
+      - "80:80"
+    volumes:
+      - ./api:/var/www/html
+  calificaciones-front: <1>
+    container_name: calificaciones-front
+    restart: always
+    image: php:7.2-apache <2>
+    ports:
+      - "8088:80" <3>
+    volumes:
+      - ./front:/var/www/html <4>
+----
+<1> Servicio para el front
+<2> Imagen base para ejecutar el front
+<3> Mapping de puertos para el front (El 80 está ocupado con la API)
+<4> Volumen en el host montado en el directorio `/var/www/html` del contenedor
+
+Si volvemos a desplegar el docker-compose.yml veremos el front ejecutándose en el puerto 8088
+
+image::calificaciones-front.png[]
+
+### Construcción de las imágenes
+
+Una vez desarrollados los servicios de la aplicación podríamos proceder a la construcción de sus imágenes. Se trataría de un proceso manual en el que ejecutaríamos el comando `docker build` en cada una de los directorios de los servicios desarrollados
+
+* En el directorio de la API: `docker build -t ualmtorres/calificaciones-api:v0 .`
+* En el directorio del front: `docker build -t ualmtorres/calificaciones-front:v0 .`
+
+### Prueba de la aplicación
+
+Si ahora quisiéramos desplegar la aplicación con Docker Compose nos encontramos con el problema que el archivo `docker-compose.yml` usa como imagen base las imágenes base creadas para el proceso de desarrollo. Sin embargo, ahora queremos desplegar la aplicación usando las imágenes creadas para la API y el front. Este problema lo podemos solventar rápidamente creando otro archivo para Docker Compose (p.e. https://gist.github.com/ualmtorres/80068c863b2dbe31d578ffed6897219f[`docker-compose-produccion.yml`]) y lanzar Docker Compose con ese archivo. `docker-compose-produccion.yml` incluiría las imágenes creadas montando igualmente los directorios de las bases de código de la API y del front.
+
+[source,yml]
+----
+version: '2'
+services:
+  calificaciones-api:
+    container_name: calificaciones-api
+    restart: always
+    image: ualmtorres/calificaciones-api:v0 <1>
+    ports:
+      - "80:80"
+    volumes:
+      - ./api:/var/www/html
+  calificaciones-front:
+    container_name: calificaciones-front
+    restart: always
+    image: ualmtorres/calificaciones-front:v0 <2>
+    ports:
+      - "8088:80"
+    volumes:
+      - ./front:/var/www/html
+----
+<1> Imagen de la API como base 
+<2> Imagen del front como base
+
+### Docker Compose con la opción `build`
+
+El tener varios archivos para Docker Compose puede resultar confuso y en algunas ocasiones nos puede llevar a errores pensando que hemos usado uno cuando realmente estábamos usando el otro. Además, la creación de imágenes en un despliegue con gran cantidad de servicios implica la construcción manual de cada una de sus imágenes.
+
+Para evitar esta situación podemos usar la opción `build`. La opción `build` crea las imágenes a partir de los archivos `Dockerfile` que indiquemos y posteriormente crea el contenedor a partir de esa imagen. Para hacer esto, incluiremos dos paticularidades en el archivo `docker-compose.yml` con respecto a los que hemos estado usando hasta ahora:
+
+* Incluir una opción `build` que indica el contexto donde encontrar el `Dockerfile` para crear la imagen del servicio.
+* El nombre de la imagen ahora no es el nombre de la imagen de base para crear el servicio, sino el nombre que se dará a la imagen construida para desplegar el servicio.
+
+.Archivo https://gist.github.com/ualmtorres/2734a52dfc6e1ea4f35bf3bc52d9c57e[`docker-compose.yml`] para la construcción de imágenes
+====
+[source,yaml]
+----
+version: '2'
+services:
+  calificaciones-api:
+    build: <1>
+      context: ./api <2>
+    container_name: calificaciones-api
+    restart: always
+    image: ualmtorres/calificaciones-api:v0 <3>
+    ports:
+      - "80:80"
+    volumes:
+      - ./api:/var/www/html
+
+  calificaciones-front:
+    build: <4>
+      context: ./front <5>
+    container_name: calificaciones-front
+    restart: always
+    image: ualmtorres/calificaciones-front:v0 <6>
+    ports:
+      - "8088:80"
+    volumes:
+      - ./front:/var/www/html
+----
+<1> Opción `build` para construir la imagen
+<2> Ruta del `Dockerfile` de la API
+<3> Nombre para la imagen de la API
+<4> Opción `build` para construir la imagen
+<5> Ruta del `Dockerfile` del front
+<6> Nombre para la imagen del front
+====
+
+Para comprobar el funcionamiento de este nuevo procedimiento, eliminaremos todo rastro de lo anterior echando abajo el despliegue anterior y borrando las imágenes creadas anteriormente.
+
+[source,bash]
+----
+$ docker-compose down
+$ docker image rm ualmtorres/calificaciones-api:v0
+$ docker image rm ualmtorres/calificaciones-front:v0
+----
+
+A continuación, basta con volver a levantar el entorno com `docker-compose up -d` y veremos como se construyen las imágenes para el despliegue de los contenedores y los servicios de Docker Compose funcionan correctamte.
+
+image::calificaciones-front.png[]
+
+Cuando introduzcamos cambios en la base de código y queramos volver a desplegarlos sobre las imágenes podremos ejecutar cualquiera de estos dos comandos:
+
+[source,bash]
+----
+$ docker-compose build
+$ docker-compose up --build
+----
 
 
 
 ## Otras cosas interesantes
+
+### Configuración de imágenes de base
+
+Aquí se muestra cómo configurar una imagen con Ubuntu 18.04, PHP y el framework Phalcon. También se muestran los dos archivos auxiliares necesarios para la configuración de Apache que necesita Phalcon.
+
+.Dockerfile
+====
+[source,dockerfile]
+----
+FROM ubuntu:18.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -yq --no-install-recommends \
+    apt-utils \
+    curl \
+    # Install git
+    git \
+    # Install apache
+    apache2 \
+    # Install last version of PHP
+    php \
+    libapache2-mod-php \
+    php-mcrypt \
+    php-mysql \
+    php-curl \
+    nano \
+    ca-certificates \
+    locales \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN curl -s "https://packagecloud.io/install/repositories/phalcon/stable/script.deb.sh" | /bin/bash
+
+RUN apt-get install -y php7.0-phalcon
+
+# Set locales
+RUN locale-gen en_US.UTF-8 en_GB.UTF-8 es_ES.UTF-8 
+
+COPY conf/apache2.conf /etc/apache2/apache2.conf
+COPY conf/dir.conf /etc/apache2/mods-available/dir.conf
+
+RUN a2enmod rewrite
+RUN a2enmod headers
+RUN service apache2 restart
+
+EXPOSE 80 443
+
+WORKDIR /var/www/html
+
+RUN rm /var/www/html/index.html
+
+HEALTHCHECK --interval=5s --timeout=3s --retries=3 CMD curl -f http://localhost || exit 1
+
+CMD apachectl -D FOREGROUND 
+----
+====
+
+.Archivo `conf/apache2.conf`
+====
+[source,apache]
+----
+Mutex file:${APACHE_LOCK_DIR} default
+
+PidFile ${APACHE_PID_FILE}
+
+Timeout 300
+
+KeepAlive On
+
+MaxKeepAliveRequests 100
+
+KeepAliveTimeout 5
+
+User ${APACHE_RUN_USER}
+Group ${APACHE_RUN_GROUP}
+
+HostnameLookups Off
+
+ErrorLog ${APACHE_LOG_DIR}/error.log
+
+LogLevel warn
+
+IncludeOptional mods-enabled/*.load
+IncludeOptional mods-enabled/*.conf
+
+Include ports.conf
+
+<Directory />
+	Options FollowSymLinks
+	AllowOverride None
+	Require all denied
+</Directory>
+
+<Directory /usr/share>
+	AllowOverride None
+	Require all granted
+</Directory>
+
+<Directory /var/www/>
+	Options Indexes FollowSymLinks
+	AllowOverride All
+	Require all granted
+	Header set Access-Control-Allow-Origin "*"
+</Directory>
+
+AccessFileName .htaccess
+
+<FilesMatch "^\.ht">
+	Require all denied
+</FilesMatch>
+
+LogFormat "%v:%p %h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+LogFormat "%h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%h %l %u %t \"%r\" %>s %O" common
+LogFormat "%{Referer}i -> %U" referer
+LogFormat "%{User-agent}i" agent
+
+IncludeOptional conf-enabled/*.conf
+
+IncludeOptional sites-enabled/*.conf
+----
+====
+
+.Archivo `conf/dir.conf`
+====
+[source,apache]
+----
+<IfModule mod_dir.c>
+	DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm
+</IfModule>
+----
+====
 
 ### Microservicios y contenedores
 
@@ -858,75 +1344,5 @@ $ docker push 192.168.65.103:5000/alpine <4>
 
 image::./RegistroPropio.png[]
 
-### Conexión a daemons Docker remotos
+https://goharbor.io/[Harbor] es una opción muy interesante para disponer de un registro propio de imágenes. Permite definir reglas de control de acceso, analizar imágenes en busca de vulnerabilidades y añadir una firma de confianza a las imágenes.
 
-Util para conectarnos desde nuestro equipo al Docker de producción o al de  pruebas
-
-* Crear en local un archivo de variables de entorno (p.e. `DockerProyectoBrainstorm.sh`)
-
-```bash
-export DOCKER_TLS_VERIFY=1
-export DOCKER_CERT_PATH="<ruta completa de certificado>"
-export DOCKER_HOST="tcp://<IP o nombre DNS>:443"
-```
-
-* Después, `source DockerProyectoBrainstorm.sh` y ¡¡Estamos conectados!!
-* Si la conexión fuera abierta, indicaríamos `export DOCKER_TLS_VERIFY=0`. 
-
-### Uso de HAProxy
-
-```
-docker-compose.yml
-version: '3'
-services:
-  php:
-    image: ualmtorres/phalcon-apache-ubuntu
-    ports:
-      - "80"
-    environment:
-     - SERVICE_PORTS=80 <1>
-    volumes:
-      - ./html:/var/www/html
-    deploy:
-      replicas: 6
-      resources:
-        limits:
-          cpus: "0.1"
-          memory: 50M
-      restart_policy:
-        condition: on-failure
-    networks:
-      - webnet
-  visualizer:
-    image: dockersamples/visualizer:stable
-    ports:
-      - "8080:8080"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-    networks:
-      - webnet
-  proxy: <2>
-    image: dockercloud/haproxy
-    depends_on:
-      - php <3>
-    environment:
-      - BALANCE=leastconn <4>
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - 80:80
-    networks:
-      - webnet
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-networks:
-  webnet:
-```
-<1> Cambio en la configuración de puertos para usar HAProxy
-<2> Servicio `proxy`
-<3> No crear el servicio `proxy` hasta que no se haya creado el `php`
-<4> Usa la política de balanceo _least connections_ en lugar de la _round robin_ predeterminada

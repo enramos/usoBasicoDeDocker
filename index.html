@@ -454,9 +454,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#trueel-code-dockerfile-code">4.1. El <code>Dockerfile</code></a></li>
 <li><a href="#trueim-genes">4.2. Imágenes</a></li>
-<li><a href="#trueejemplo-de-contenedor-para-aplicaciones-web-en-php">4.3. Ejemplo de contenedor para aplicaciones web en PHP</a></li>
-<li><a href="#trueejemplo-de-contenedor-con-volumen-externo">4.4. Ejemplo de contenedor con volumen externo</a></li>
-<li><a href="#truedescarga-y-subida-de-im-genes-a-docker-hub">4.5. Descarga y subida de imágenes a Docker Hub</a></li>
+<li><a href="#truedistribuci-n-y-ejecuci-n-de-aplicaciones-mediante-code-dockerfile-code">4.3. Distribución y ejecución de aplicaciones mediante <code>Dockerfile</code></a></li>
+<li><a href="#trueejecuci-n-de-la-aplicaci-n-a-partir-de-la-imagen-creada">4.4. Ejecución de la aplicación a partir de la imagen creada</a></li>
+<li><a href="#truesubida-de-im-genes-a-docker-hub">4.5. Subida de imágenes a Docker Hub</a></li>
 <li><a href="#trueresumen-de-comandos-b-sicos-para-im-genes">4.6. Resumen de comandos básicos para imágenes</a></li>
 </ul>
 </li>
@@ -464,16 +464,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#trueflujo-de-trabajo-b-sico-con-docker-compose">5.1. Flujo de trabajo básico con Docker Compose</a></li>
 <li><a href="#truecomandos-b-sicos-para-docker-compose">5.2. Comandos básicos para Docker Compose</a></li>
+<li><a href="#trueejemplo-aplicaci-n-web-php-con-soporte-de-base-de-datos-mysql">5.3. Ejemplo: Aplicación web (PHP) con soporte de Base de datos (MySQL)</a></li>
 </ul>
 </li>
-<li><a href="#trueejemplo-aplicaci-n-web-php-con-soporte-de-base-de-datos-mysql">6. Ejemplo: Aplicación web (PHP) con soporte de Base de datos (MySQL)</a></li>
+<li><a href="#truedesarrollo-con-docker-compose">6. Desarrollo con Docker Compose</a>
+<ul class="sectlevel2">
+<li><a href="#truedesarrollo-de-la-api">6.1. Desarrollo de la API</a></li>
+<li><a href="#truedesarrollo-del-front">6.2. Desarrollo del front</a></li>
+<li><a href="#trueconstrucci-n-de-las-im-genes">6.3. Construcción de las imágenes</a></li>
+<li><a href="#trueprueba-de-la-aplicaci-n">6.4. Prueba de la aplicación</a></li>
+<li><a href="#truedocker-compose-con-la-opci-n-code-build-code">6.5. Docker Compose con la opción <code>build</code></a></li>
+</ul>
+</li>
 <li><a href="#trueotras-cosas-interesantes">7. Otras cosas interesantes</a>
 <ul class="sectlevel2">
-<li><a href="#truemicroservicios-y-contenedores">7.1. Microservicios y contenedores</a></li>
-<li><a href="#trueel-ecosistema-docker">7.2. El ecosistema Docker</a></li>
-<li><a href="#trueinstalar-un-registro-de-im-genes-propio">7.3. Instalar un registro de imágenes propio</a></li>
-<li><a href="#trueconexi-n-a-daemons-docker-remotos">7.4. Conexión a daemons Docker remotos</a></li>
-<li><a href="#trueuso-de-haproxy">7.5. Uso de HAProxy</a></li>
+<li><a href="#trueconfiguraci-n-de-im-genes-de-base">7.1. Configuración de imágenes de base</a></li>
+<li><a href="#truemicroservicios-y-contenedores">7.2. Microservicios y contenedores</a></li>
+<li><a href="#trueel-ecosistema-docker">7.3. El ecosistema Docker</a></li>
+<li><a href="#trueinstalar-un-registro-de-im-genes-propio">7.4. Instalar un registro de imágenes propio</a></li>
 </ul>
 </li>
 </ul>
@@ -590,7 +598,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ git clone https://github.com/ualmtorres/docker_customer_catalog.git
+<pre class="highlightjs highlight"><code>$ git clone https://github.com/ualmtorres/docker_customer_catalog.git
 $ cd docker_customer_catalog
 $ docker-compose up -d</code></pre>
 </div>
@@ -606,7 +614,7 @@ $ docker-compose up -d</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker-compose down</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker-compose down</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -783,7 +791,7 @@ También permite automatizar la construcción de imágenes y su despliegue con r
 <h3 id="trueel-hola-mundo"><a class="anchor" href="#trueel-hola-mundo"></a>2.3. El Hola mundo</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker --version
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker --version
 Docker version 18.09.2, build 6247962
 
 $ docker run hello-world
@@ -812,7 +820,7 @@ This message shows that your installation appears to be working correctly.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">Unable to find image 'hello-world:latest' locally
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">Unable to find image 'hello-world:latest' locally
 latest: Pulling from library/hello-world
 9bb5a5d4561a: Pull complete
 Digest: sha256:f5233545e43561214ca4891fd1157e1c3c563316ed8e237750d59bde73361e77
@@ -829,7 +837,7 @@ Status: Downloaded newer image for hello-world:latest</code></pre>
 <h3 id="truecrear-un-contenedor-apache"><a class="anchor" href="#truecrear-un-contenedor-apache"></a>2.4. Crear un contenedor Apache</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker run -d -p 82:80 --name apache httpd</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker run -d -p 82:80 --name apache httpd</code></pre>
 </div>
 </div>
 <div class="ulist">
@@ -941,7 +949,7 @@ Status: Downloaded newer image for hello-world:latest</code></pre>
 <h4 id="truemostrar-contenedores"><a class="anchor" href="#truemostrar-contenedores"></a>2.7.1. Mostrar contenedores</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker ps
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker ps
 CONTAINER ID        IMAGE               COMMAND              CREATED             STATUS              PORTS                NAMES
 99f6727e2506        httpd               "httpd-foreground"   4 seconds ago       Up 3 seconds        0.0.0.0:82-&gt;80/tcp   apache</code></pre>
 </div>
@@ -968,7 +976,7 @@ CONTAINER ID        IMAGE               COMMAND              CREATED            
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker ps
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker ps
 CONTAINER ID        IMAGE               COMMAND              CREATED             STATUS              PORTS                NAMES
 99f6727e2506        httpd               "httpd-foreground"   4 seconds ago       Up 3 seconds        0.0.0.0:82-&gt;80/tcp   apache</code></pre>
 </div>
@@ -1008,7 +1016,7 @@ CONTAINER ID        IMAGE               COMMAND              CREATED            
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker ps -a
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker ps -a
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                        PORTS                    NAMES
 99f6727e2506        httpd               "httpd-foreground"       20 minutes ago      Exited (0) 2 minutes ago                               apache</code></pre>
 </div>
@@ -1018,7 +1026,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker start apache</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker start apache</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1026,7 +1034,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker start 99f6727e2506</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker start 99f6727e2506</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1034,7 +1042,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker ps
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
 99f6727e2506        httpd               "httpd-foreground"       9 hours ago         Up 10 seconds       0.0.0.0:82-&gt;80/tcp       apache</code></pre>
 </div>
@@ -1047,7 +1055,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker stop `docker ps -q`</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker stop `docker ps -q`</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1055,7 +1063,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker start 99f6727e2506 9811efbf6e45 178c2d03f2e7</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker start 99f6727e2506 9811efbf6e45 178c2d03f2e7</code></pre>
 </div>
 </div>
 </div>
@@ -1066,7 +1074,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker exec -it 99f6727e2506 bash
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker exec -it 99f6727e2506 bash
 root@99f6727e2506:/usr/local/apache2#</code></pre>
 </div>
 </div>
@@ -1092,7 +1100,7 @@ root@99f6727e2506:/usr/local/apache2#</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">docker cp [OPTIONS] CONTAINER:SRC_PATH DEST_PATH|-
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">docker cp [OPTIONS] CONTAINER:SRC_PATH DEST_PATH|-
 docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH</code></pre>
 </div>
 </div>
@@ -1101,7 +1109,7 @@ docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>&lt;!-- Ejemplo de archivo index.html --&gt;
+<pre class="highlightjs highlight"><code>&lt;!-- Ejemplo de archivo index.html --&gt;
 &lt;html&gt;
   &lt;body&gt;
     &lt;h1&gt;Docker es una maravilla&lt;/h1&gt;
@@ -1114,7 +1122,7 @@ docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker cp index.html apache:/usr/local/apache2/htdocs/</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker cp index.html apache:/usr/local/apache2/htdocs/</code></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -1131,7 +1139,7 @@ docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker stop apache
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker stop apache
 $ docker rm apache</code></pre>
 </div>
 </div>
@@ -1146,7 +1154,7 @@ $ docker rm apache</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker run -d -p 82:80 httpd</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker run -d -p 82:80 httpd</code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -1161,7 +1169,7 @@ $ docker rm apache</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker rm -f `docker ps -a | grep "wordpress" | awk '{print $1}'`</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker rm -f `docker ps -a | grep "wordpress" | awk '{print $1}'`</code></pre>
 </div>
 </div>
 </td>
@@ -1173,7 +1181,7 @@ $ docker rm apache</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker container prune</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker container prune</code></pre>
 </div>
 </div>
 </div>
@@ -1182,7 +1190,7 @@ $ docker rm apache</code></pre>
 <h3 id="trueresumen-de-comandos-b-sicos-para-contenedores"><a class="anchor" href="#trueresumen-de-comandos-b-sicos-para-contenedores"></a>2.8. Resumen de comandos básicos para contenedores</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-sh" data-lang="sh">$ docker info
+<pre class="highlightjs highlight"><code class="language-sh" data-lang="sh">$ docker info
 $ docker version
 $ docker run &lt;image&gt; // Crea un contenedor a partir de una imagen. Si no tenemos la imagen en local, la descarga
 $ docker run -d -p 82:80 --name my-nginx nginx: Crea un contenedor denominado my-nginx en modo deattached accesible desde el puerto 82
@@ -1262,7 +1270,7 @@ $ docker rm -f `docker ps -a | grep "wordpress" | awk '{print $1}'`: Eliminar to
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ git clone https://github.com/ualmtorres/webEstaticaBasica.git
+<pre class="highlightjs highlight"><code>$ git clone https://github.com/ualmtorres/webEstaticaBasica.git
 $ docker run -d \
     -p 80:80 \ <i class="conum" data-value="1"></i><b>(1)</b>
     --name my-web \ <i class="conum" data-value="2"></i><b>(2)</b>
@@ -1342,7 +1350,7 @@ $ docker run -d \
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker run -d \
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker run -d \
     -p 3306:3306 \ <i class="conum" data-value="1"></i><b>(1)</b>
     --name my-mysql \ <i class="conum" data-value="2"></i><b>(2)</b>
     -v $(pwd)/init.sql:/docker-entrypoint-initdb.d/init.sql \ <i class="conum" data-value="3"></i><b>(3)</b>
@@ -1389,7 +1397,7 @@ $ docker run -d \
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker exec -it my-mysql bash <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker exec -it my-mysql bash <i class="conum" data-value="1"></i><b>(1)</b>
 
 root@3c51f13a1046:/# mysql -u root -p <i class="conum" data-value="2"></i><b>(2)</b>
 Enter password:
@@ -1463,7 +1471,7 @@ mysql&gt; show databases; <i class="conum" data-value="3"></i><b>(3)</b>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code># Use an official Python runtime as a parent image
+<pre class="highlightjs highlight"><code># Use an official Python runtime as a parent image
 FROM python:2.7-slim
 
 # Set the working directory to /app
@@ -1490,7 +1498,7 @@ CMD ["python", "app.py"]</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>FROM ubuntu:latest
+<pre class="highlightjs highlight"><code>FROM ubuntu:latest
 RUN apt-get update -y
 RUN apt-get install -y python-pip python-dev
 WORKDIR /app
@@ -1548,87 +1556,208 @@ VOLUME /data <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="trueejemplo-de-contenedor-para-aplicaciones-web-en-php"><a class="anchor" href="#trueejemplo-de-contenedor-para-aplicaciones-web-en-php"></a>4.3. Ejemplo de contenedor para aplicaciones web en PHP</h3>
+<h3 id="truedistribuci-n-y-ejecuci-n-de-aplicaciones-mediante-code-dockerfile-code"><a class="anchor" href="#truedistribuci-n-y-ejecuci-n-de-aplicaciones-mediante-code-dockerfile-code"></a>4.3. Distribución y ejecución de aplicaciones mediante <code>Dockerfile</code></h3>
 <div class="paragraph">
-<p>Vamos a construir un contenedor que incluya de forma estática una aplicación (p.e. la última versión de la aplicación). El proceso a seguir es:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Creación de la aplicación.</p>
-</li>
-<li>
-<p>Creación del <code>Dockerfile</code> para generación de la imagen.</p>
-</li>
-<li>
-<p>Generación de la imagen.</p>
-</li>
-</ol>
+<p>Supongamos el siguiente escenario. Contamos con el código de una aplicación disponible en un repositorio. Con la ayuda de <code>Dockerfile</code> podemos crear una imagen local con todo el software y configuración que necesita la aplicación para ejecutarse y crear después un contenedor a partir de dicha imagen. El código de la aplicación podrá ser copiado directamete al contenedor o se podrá montar un volumen en el sistema de archivos del host de forma que se pueda editar el código y no se pierdan los cambios al eliminar el contenedor.</p>
 </div>
 <div class="paragraph">
-<p>A partir de una carpeta nueva crearemos lo siguiente:</p>
+<p>Por tanto, una buena forma de distribuir una aplicación puede ser incluir un <code>Dockerfile</code> con la configuración de software que necesita para ejecutarse junto con el código de la aplicación.</p>
+</div>
+<div class="paragraph">
+<p>El <code>Dockerfile</code> siguiente contiene los pasos a seguir para:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Archivo <code>Dockerfile</code></p>
+<p>Crear una imagen con Apache, PHP y el framework Phalcon.</p>
 </li>
 <li>
-<p>Carpeta <code>html</code> con los scritps de nuestra aplicación</p>
+<p>Incluir el código de la aplicación en el contenedor.</p>
 </li>
 <li>
-<p>Archivo <code>html/index.php</code> con el código de nuestra aplicación</p>
+<p>Exponer el puerto deseado.</p>
+</li>
+<li>
+<p>Crear un punto de montaje en el contenedor. Este punto de montaje se podrá conectar al sistema de archivos del host con un <em>bind mount</em> al iniciar el contenedor.</p>
 </li>
 </ul>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>FROM ualmtorres/phalcon-apache-ubuntu <i class="conum" data-value="1"></i><b>(1)</b>
+
+ADD webEstaticaBasica /var/www/html <i class="conum" data-value="2"></i><b>(2)</b>
+
+EXPOSE 80 <i class="conum" data-value="3"></i><b>(3)</b>
+
+VOLUME /var/www/html <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Imagen de base. Incluye Apache, PHP y el framework Phalcon</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Añade el código de la carpeta <code>webEstaticaBasica</code> del sistema de archivos local a la carpeta <code>/var/www/html</code> del contenedor</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Informa del puerto en el que escucha el contenedor</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Ofrece la carpeta <code>/var/www/html</code> como punto de montaje</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
 <div class="paragraph">
-<p>El <code>Dockerfile</code></p>
+<p>Si se quieren ofrecer varios puntos de montaje se hará a través de un array.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>FROM ualmtorres/phalcon-apache-ubuntu
-
-ADD html /var/www/html
-
-EXPOSE 80</code></pre>
+<pre class="highlightjs highlight"><code>VOLUME ["/var/www/html", "/var/log/apache2", "/etc/apache2"]</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Archivo <code>html/index.php</code> de ejemplo</p>
+<p>Si se quieren exponer varios puertos se hará enumerando la lista de puertos</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>&lt;?php
-  echo "Hola desde Docker";
-?&gt;</code></pre>
+<pre class="highlightjs highlight"><code>EXPOSE 80 443</code></pre>
 </div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Configura tus propias imagen de base siguiendo el ejemplo del anexo <a href="#trueconfiguraci-n-de-im-genes-de-base">Configuración de imágenes de base</a></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>En un caso sencillo, podríamos reducir a que una aplicación está formada su base de código y el entorno en el que se ejecuta. El código de esa aplicación posiblemente esté en un repositorio
+Vamos a construir un contenedor a partir del código del repositorio y lo ofrezca al host como un volumen. El proceso a seguir es:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Descargar el repositorio del código de la aplicación.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>$ git clone https://github.com/ualmtorres/webEstaticaBasica.git</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Creación del <code>Dockerfile</code> para la construcción de la imagen.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>FROM ualmtorres/phalcon-apache-ubuntu
+
+ADD index.html /var/www/html
+
+EXPOSE 80
+
+VOLUME /var/www/html</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Es buena idea incluir en el repositorio de la aplicación el <code>Dockerfile</code>. Así se contará tanto con el código de la aplicación como con las instrucciones (en forma de <code>Dockerfile</code>) para crear el contenedor de la aplicación con todo lo necesario.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p><a href="#trueconstrucci-n-de-la-imagen">Construcción de la imagen</a></p>
+</li>
+</ol>
 </div>
 <div class="sect3">
-<h4 id="trueconstrucci-n-de-la-imagen"><a class="anchor" href="#trueconstrucci-n-de-la-imagen"></a>4.3.1. Construcción de la imagen.</h4>
+<h4 id="trueconstrucci-n-de-la-imagen"><a class="anchor" href="#trueconstrucci-n-de-la-imagen"></a>4.3.1. Construcción de la imagen</h4>
 <div class="paragraph">
-<p><code>$ docker build -t pruebaphp .</code></p>
+<p>El comando <code>docker build</code> crea una imagen nueva usando las instrucciones del <code>Dockerfile</code>.</p>
 </div>
 <div class="paragraph">
+<p><code>$ docker build -t ualmtorres/web-estatica-basica:v0 .</code></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
 <p>Con <code>-t</code> definimos una etiqueta o nombre de la imagen. Al construir la imagen pasa a nuestro registro local.</p>
+</li>
+<li>
+<p>Con <code>.</code> indicamos a Docker que utilice el directorio actual como contexto para hace el <em>build</em></p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Es buena práctica crear etiquetas con el nombre de usuario el Docker Hub, el nombre de la imagen y la versión.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">
 <h4 id="truelistado-de-im-genes-locales"><a class="anchor" href="#truelistado-de-im-genes-locales"></a>4.3.2. Listado de imágenes locales</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker image ls
-REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
-pruebaphp              latest              152781e32617        14 hours ago        245MB</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker image list
+REPOSITORY                                   TAG                 IMAGE ID            CREATED             SIZE
+ualmtorres/web-estatica-basica               v0                  ed27de86aa03        30 seconds ago      309MB</code></pre>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="truecreaci-n-de-un-contenedor-a-partir-de-la-imagen"><a class="anchor" href="#truecreaci-n-de-un-contenedor-a-partir-de-la-imagen"></a>4.3.3. Creación de un contenedor a partir de la imagen</h4>
+</div>
+<div class="sect2">
+<h3 id="trueejecuci-n-de-la-aplicaci-n-a-partir-de-la-imagen-creada"><a class="anchor" href="#trueejecuci-n-de-la-aplicaci-n-a-partir-de-la-imagen-creada"></a>4.4. Ejecución de la aplicación a partir de la imagen creada</h3>
 <div class="paragraph">
-<p><code>$ docker run -d -p 83:80 pruebaphp</code></p>
+<p>Usaremos un <em>bind mount</em> para poder modificar el código de la aplicación y poder conservar los cambios. Posteriormente, podremos subir los cambios de la aplicación al repositorio.</p>
 </div>
-<div class="paragraph">
-<p>Un posible inconveniente que podemos encontrar en este ejemplo es que la aplicación va incluida en la propia imagen, por lo que para actualizar la aplicación deberemos crear una nueva imagen, y después crear un nuevo contenedor a partir de ella desechando el contenedor anterior.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker run -d \
+    -p 83:80 \
+    --name webEstaticaBasica \
+    -v $(pwd):/var/www/html \
+    ualmtorres/web-estatica-basica:v0</code></pre>
+</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1645,92 +1774,20 @@ pruebaphp              latest              152781e32617        14 hours ago     
 </table>
 </div>
 </div>
-</div>
 <div class="sect2">
-<h3 id="trueejemplo-de-contenedor-con-volumen-externo"><a class="anchor" href="#trueejemplo-de-contenedor-con-volumen-externo"></a>4.4. Ejemplo de contenedor con volumen externo</h3>
+<h3 id="truesubida-de-im-genes-a-docker-hub"><a class="anchor" href="#truesubida-de-im-genes-a-docker-hub"></a>4.5. Subida de imágenes a Docker Hub</h3>
 <div class="paragraph">
-<p>En este ejemplo la aplicación la tendremos aparte en un volumen externo accesible por el contenedor. De esta forma, si nuestra aplicación está vinculada a un repositorio, la actualización de la aplicación se realiza descargando la última versión del repositorio, manteniendo intacto el contenedor.</p>
-</div>
-<div class="paragraph">
-<p>La forma de usar volúmenes con <code>Dockerfile</code> consiste en:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Añadir en el <code>Dockerfile</code> la lista de carpetas que se montarán con volúmenes externos</p>
-</li>
-<li>
-<p>Al crear el contenedor indicar el punto de montaje en el host remoto en forma de ruta absoluta</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>El <code>Dockerfile</code></p>
+<p>Hasta ahora la imagen creada está en el repositorio local de imágenes. Para subirla a un repositorio remoto, como Docker Hub, primero iniciaremos sesión con <code>docker login</code> y después podremos subir la imagen con el comando siguiente</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>FROM ualmtorres/phalcon-apache-ubuntu
-
-VOLUME /var/www/html
-
-EXPOSE 80</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker run -d -p 83:80 -v=/Users/manolo/Documents/Desarrollo/SeminarioDocker/phpsimple/html:/var/www/html pruebaphp</code></pre>
-</div>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>También podemos hacer uso de la evaluación de órdenes con apóstrofes para obtener el path actual y añadirle sólo la carpeta <code>html</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker run -d -p 83:80 -v=`pwd`/html:/var/www/html pruebaphp</code></pre>
-</div>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="truedescarga-y-subida-de-im-genes-a-docker-hub"><a class="anchor" href="#truedescarga-y-subida-de-im-genes-a-docker-hub"></a>4.5. Descarga y subida de imágenes a Docker Hub</h3>
-<div class="ulist">
-<ul>
-<li>
-<p>Etiquetar la imagen antes de subirla a Docker Hub</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code>$ docker tag phpprueba ualmtorres/phpprueba:v0</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">docker push &lt;user&gt;/&lt;image&gt;:&lt;tag&gt;</code></pre>
 </div>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Subida de la imagen a Docker Hub</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">docker push &lt;usuario&gt;/&lt;image&gt;</code></pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Al hacer <code>push</code> las capas que ya estén subidas no se vuelven a subir. En cuanto una instrucción del <code>Dockerfile</code> cambia una capa, invalida al resto y hay que volver a generar las instrucciones de las capas restantes. Por tanto, colocaremos antes en el <code>Dockerfile</code> lo que menos cambie.</p>
+<p>Al hacer <code>push</code> las capas que ya estén subidas no se vuelven a subir. En cuanto una instrucción del <code>Dockerfile</code> cambia una capa, invalida al resto y se volcerán a crear las capas restantes. Por tanto, colocaremos antes en el <code>Dockerfile</code> lo que menos cambie.</p>
 </li>
 <li>
 <p>Al hacer <code>pull</code> sólo se descargan las capas nuevas.</p>
@@ -1742,7 +1799,7 @@ EXPOSE 80</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker pull wordpress
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker pull wordpress
 $ docker run -d -p 80:80 --name my_wordpress wordpress</code></pre>
 </div>
 </div>
@@ -1751,8 +1808,8 @@ $ docker run -d -p 80:80 --name my_wordpress wordpress</code></pre>
 <h3 id="trueresumen-de-comandos-b-sicos-para-im-genes"><a class="anchor" href="#trueresumen-de-comandos-b-sicos-para-im-genes"></a>4.6. Resumen de comandos básicos para imágenes</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker login
-$ docker run -d ngninx
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker login
+$ docker run -d nginx
 $ docker pull &lt;image&gt;
 $ docker image ls: Lista imágenes locales
 $ docker inspect &lt;image&gt;: Propiedades de una imagen
@@ -1771,10 +1828,10 @@ $ docker image rm &lt;image&gt;: Elimina una imagen local</code></pre>
 <p>Docker Compose es una herramienta para definir y ejecutar aplicaciones Docker con varios contenedores.</p>
 </li>
 <li>
-<p>Usaremos un archivo <code>docker-compose.yml</code> para configurar los <em>servicios</em> de la aplicación. Los servicios son las partes de la aplicación (p.e. un servicio para el almacenamiento de los datos y otro para el front-end)</p>
+<p>De forma predeterminada, usaremos un archivo <code>docker-compose.yml</code> para configurar los <em>servicios</em> de la aplicación. Los servicios son los componentes de la aplicación (p.e. un servicio para el almacenamiento de los datos y otro para el front-end)</p>
 </li>
 <li>
-<p>En un mismo host podemos tener varios entonos aislados. Compose usa nombres de proyecto para mantener a los entornos aislados. De forma predeterminada se usa el nombre del directorio desde donde se lanza la aplicación.</p>
+<p>En un mismo host podemos tener varios entornos aislados. Compose usa nombres de proyecto para mantener a los entornos aislados. De forma predeterminada, Compose usa el nombre del directorio desde donde se lanza la aplicación.</p>
 </li>
 <li>
 <p><code>docker-compose --version</code> para obtener la versión y saber si está instalado.</p>
@@ -1799,22 +1856,48 @@ $ docker image rm &lt;image&gt;: Elimina una imagen local</code></pre>
 </li>
 </ol>
 </div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>El comando <code>docker-compose down</code> necesita el archivo <code>docker-compose.yml</code> para echar abajo el entorno. Por tanto, siempre tiene que ejecutarse en el directorio donde se lanzó <code>docker-compose up</code>. Sin embargo, en ocasiones cerraremos la ventana desde donde se lanzó el entorno y necesitamos alguna forma de poder recordar dónde estaba.</p>
+</div>
+<div class="paragraph">
+<p>El script siguiente devuelve los nombres de directorio desde los que se hayan lanzado todos los entornos de Compose que se tengan en ejecución.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>docker ps --filter "label=com.docker.compose.project" -q |
+    xargs docker inspect \
+    --format='{{index .Config.Labels "com.docker.compose.project"}}'|
+    sort |
+    uniq</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A partir de ahí, se trata de buscar en el sistema de archivos del host los nombres de directorio devueltos.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect2">
 <h3 id="truecomandos-b-sicos-para-docker-compose"><a class="anchor" href="#truecomandos-b-sicos-para-docker-compose"></a>5.2. Comandos básicos para Docker Compose</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-sh" data-lang="sh">$ docker-compose up -d      Construye y lanza el entorno en modo dettached
+<pre class="highlightjs highlight"><code class="language-sh" data-lang="sh">$ docker-compose up -d      Construye y lanza el entorno en modo dettached
 $ docker-compose pull       Descarga las imágenes pero no inicia los contenedores
 $ docker-compose rm [-fs]   Borra los contedores parados. Con -fs los detiene y fuerza su borrado</code></pre>
 </div>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="trueejemplo-aplicaci-n-web-php-con-soporte-de-base-de-datos-mysql"><a class="anchor" href="#trueejemplo-aplicaci-n-web-php-con-soporte-de-base-de-datos-mysql"></a>6. Ejemplo: Aplicación web (PHP) con soporte de Base de datos (MySQL)</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="trueejemplo-aplicaci-n-web-php-con-soporte-de-base-de-datos-mysql"><a class="anchor" href="#trueejemplo-aplicaci-n-web-php-con-soporte-de-base-de-datos-mysql"></a>5.3. Ejemplo: Aplicación web (PHP) con soporte de Base de datos (MySQL)</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1836,7 +1919,7 @@ $ docker-compose rm [-fs]   Borra los contedores parados. Con -fs los detiene y 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ git clone https://github.com/ualmtorres/customer_catalog.git</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ git clone https://github.com/ualmtorres/docker_customer_catalog.git</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1845,10 +1928,10 @@ $ docker-compose rm [-fs]   Borra los contedores parados. Con -fs los detiene y 
 <div class="ulist">
 <ul>
 <li>
-<p>Un archivo <code>docker-compose.yml</code> que configura dos serivicios. Un servicio para almacenamiento de datos con MySQL y otro servicio para el front-end PHP de la aplicación.</p>
+<p>Un archivo <code>docker-compose.yml</code> que configura dos servicios: un servicio para almacenamiento de datos con MySQL y otro servicio para la aplicación PHP.</p>
 </li>
 <li>
-<p>Una carpeta <code>html</code> con la aplicación. Esta carpeta será la que monte el servicio front-end, de forma que la aplicación no está almacenada en el contenedor.</p>
+<p>Una carpeta <code>html</code> con la aplicación. Esta carpeta será la que monte la aplicación PHP de forma que el código de la aplicación no esté almacenada en el contenedor.</p>
 </li>
 <li>
 <p>Un script SQL <code>init.sql</code> que inicializa la base de datos de nuestra aplicación. La base de datos se almacena en nuestro host, garantizando almacenamiento persistente.</p>
@@ -1860,10 +1943,10 @@ $ docker-compose rm [-fs]   Borra los contedores parados. Con -fs los detiene y 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">version: '2'
+<pre class="highlightjs highlight"><code class="language-yaml" data-lang="yaml">version: '2'
 services:
   mysql:
-    container_name: my_mysql
+    container_name: mysql <i class="conum" data-value="1"></i><b>(1)</b>
     restart: always
     image: mysql:5.7
     environment:
@@ -1871,42 +1954,166 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./data:/var/lib/mysql <i class="conum" data-value="1"></i><b>(1)</b>
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql <i class="conum" data-value="2"></i><b>(2)</b>
+      - ./data:/var/lib/mysql <i class="conum" data-value="2"></i><b>(2)</b>
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql <i class="conum" data-value="3"></i><b>(3)</b>
   php:
-    container_name: my_php
+    container_name: php
     restart: always
     image: ualmtorres/phalcon-apache-ubuntu
     ports:
       - "80:80"
     volumes:
-      - ./html:/var/www/html <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+      - ./html:/var/www/html <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Montar una carpeta <code>data</code> de nuestro host en la ruta en la que el servicio <code>mysql</code> almacena la base de datos</td>
+<td>Nombre del contenedor. Este será el nombre que usará el contendor de la aplicación PHP para poder acceder a este contenedor</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>La imagen de MySQL ejecutará al inicio cualquier script que encuentre en `/docker-entrypoint-initdb.d/</td>
+<td>Montar una carpeta <code>data</code> de nuestro host en la ruta en la que el servicio <code>mysql</code> almacena la base de datos</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>La imagen de MySQL ejecutará al inicio cualquier script que encuentre en <code>/docker-entrypoint-initdb.d/</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>Montar una carpeta <code>html</code> de nuestro host en la ruta en la que el servicio <code>php</code> almacena la aplicación</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p><code>index.php</code> <a href="https://gist.githubusercontent.com/ualmtorres/0c9ba76eb22a35e328dbc322e6c100d1/raw/812f0db2da07037416db8967130eb16b16b5b88e/index.php">Descargar index.php</a></p>
+<p>Para lanzar la aplicación multicontenedor ejecutaremos el comando</p>
 </div>
-<script src="https://gist.github.com/ualmtorres/0c9ba76eb22a35e328dbc322e6c100d1.js"></script>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>$ docker-compose up -d</code></pre>
+</div>
+</div>
 <div class="paragraph">
-<p><code>init.sql</code> <a href="https://gist.githubusercontent.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f/raw/448b00c44d7102d66077a393dad555585862f923/init.sql">Descargar init.sql</a></p>
+<p>Esto creará un contenedor para cada servicio y una red para que los contenedores de los servicios se puedan comunicar entre sí. El nombre de la red vendrá determinado por el nombre del directorio desde donde se lance Docker Compose. Los contenedores podrán referenciarse unos a otros por el nombre del contenedor.</p>
+</div>
+<div class="paragraph">
+<p>Para probar esto, abrir una sesión interactiva en el contenedor PHP y hacer <code>ping mysql</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker exec -it php bash
+
+root@61d202a9f1bf:/app# ping mysql <i class="conum" data-value="1"></i><b>(1)</b>
+
+PING mysql (192.168.32.3) 56(84) bytes of data.
+64 bytes from mysql.docker_customer_catalog_default (192.168.32.3): icmp_seq=1 ttl=64 time=0.132 ms
+64 bytes from mysql.docker_customer_catalog_default (192.168.32.3): icmp_seq=2 ttl=64 time=0.185 ms
+64 bytes from mysql.docker_customer_catalog_default (192.168.32.3): icmp_seq=3 ttl=64 time=0.120 ms</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Se usa el nombre del contenedor asignado en <code>docker-compose.yml</code> para referenciarlo</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Aunque en el <code>docker-compose.yml</code> es posible asignar un nombre diferente al contenedor que al servicio al que pertenece, se recomienda usar el mismo nombre. <strong>Los contenedores desplegados con  Docker Compose realmente usan el nombre de los contenedores para referenciarse unos a otros. Por eso, para evitar consfusiones, mejor usar el mismo nombre para servicio y para contenedor.</strong></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">Example 3. Archivo <code>index.php</code> con el código de la aplicación</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta http-equiv="X-UA-Compatible" content="IE=edge"&gt;
+  &lt;title&gt;Web PHP-MySQL con Docker&lt;/title&gt;
+  &lt;link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class = "container"&gt;
+    &lt;div class="jumbotron"&gt;
+      &lt;h1 class="display-4"&gt;Docker app&lt;/h1&gt;
+      &lt;p class="lead"&gt;Ejemplo de aplicacion PHP y MySQL con contenedores&lt;/p&gt;
+      &lt;hr class="my-4"&gt;
+      &lt;p&gt;Usa un contenedor para Apache/PHP y otro para MySQL con almacenamiento de aplicación y de datos en volúmenes externos&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;table class="table table-striped table-responsive"&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;
+          &lt;th&gt;Name&lt;/th&gt;
+          &lt;th&gt;Credit Rating&lt;/th&gt;
+          &lt;th&gt;Address&lt;/th&gt;
+          &lt;th&gt;City&lt;/th&gt;
+          &lt;th&gt;State&lt;/th&gt;
+          &lt;th&gt;Country&lt;/th&gt;
+          &lt;th&gt;Zip&lt;/th&gt;
+        &lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;?php
+        $conexion = mysql_connect("mysql", "root", "secret"); <i class="conum" data-value="1"></i><b>(1)</b>
+        mysql_select_db("SG", $conexion);
+
+        $cadenaSQL = "select * from s_customer";
+        $resultado = mysql_query($cadenaSQL);
+
+        while ($fila = mysql_fetch_object($resultado)) {
+         echo "&lt;tr&gt;&lt;td&gt; " .$fila-&gt;name .
+         "&lt;/td&gt;&lt;td&gt;" . $fila-&gt;credit_rating .
+         "&lt;/td&gt;&lt;td&gt;" . $fila-&gt;address .
+         "&lt;/td&gt;&lt;td&gt;" . $fila-&gt;city .
+         "&lt;/td&gt;&lt;td&gt;" . $fila-&gt;state .
+         "&lt;/td&gt;&lt;td&gt;" . $fila-&gt;country .
+         "&lt;/td&gt;&lt;td&gt;" . $fila-&gt;zip_code .
+         "&lt;/td&gt;&lt;/tr&gt;";
+       }
+
+       ?&gt;
+     &lt;/tbody&gt;
+   &lt;/table&gt;
+ &lt;/div&gt;
+ &lt;script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"&gt;&lt;/script&gt;
+ &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"&gt;&lt;/script&gt;
+ &lt;script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>El nombre con el que se accede a la base de datos MySQL es el nombre del contenedor usado en <code>docker-compose.yml</code></td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Archivo <code>init.sql</code> para inicializar la base de datos <a href="https://gist.githubusercontent.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f/raw/448b00c44d7102d66077a393dad555585862f923/init.sql">Descargar init.sql</a></p>
 </div>
 <script src="https://gist.github.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f.js"></script>
+<div class="paragraph">
+<p>La aplicación quedará disponible</p>
+</div>
 <div class="imageblock">
 <div class="content">
 <img src="./images/CustomerCatalog.png" alt="CustomerCatalog.png" width="100%">
@@ -1915,11 +2122,547 @@ services:
 </div>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="truedesarrollo-con-docker-compose"><a class="anchor" href="#truedesarrollo-con-docker-compose"></a>6. Desarrollo con Docker Compose</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A la hora de desarrollar una aplicación con varios contenedores que tienen que trabajar de forma coordinada (p.e. una aplicación de frontend y backend) usaremos Docker Compose creando un servicio para cada componente (p.e. uno para el front y otro para la API). Cada uno de esos componentes es susceptible de empaquetarse como una imagen Docker. Por tanto, cada componente debería incluir su <code>Dockerfile</code> para construir su imagen correspondiente. Así, la estructura recomendada para desarrollar con Docker Compose podría ser algo parecido a esto:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>.
+├── docker-compose.yml <i class="conum" data-value="1"></i><b>(1)</b>
+├── servicio-1 <i class="conum" data-value="2"></i><b>(2)</b>
+│   ├── Dockerfile <i class="conum" data-value="3"></i><b>(3)</b>
+│   └── Base de código del servicio 1
+├── servicio-2
+│   ├── Dockerfile
+│   └── Base de código del servicio 2
+...
+└── servicio-n
+    ├── Dockerfile
+    └── Base de código del servicio n</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Archivo con la configuración de ejecución</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Directorio para cada servicio/componente</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Instrucciones para la creación de la imagen del servicio</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Para ilustrar esto usaremos un ejemplo ficticio que desarrolle una API con calificaciones y un front para presentar los datos de la API. A continuación se muestran los pasos:</p>
+</div>
+<div class="sect2">
+<h3 id="truedesarrollo-de-la-api"><a class="anchor" href="#truedesarrollo-de-la-api"></a>6.1. Desarrollo de la API</h3>
+<div class="paragraph">
+<p>Se trata de una API en PHP con Phalcon. La API contiene los datos directamente en JSON para no añadir otro componente de bases de datos al ejemplo, conseguir un ejemplo más sencillo y no perdernos en los detalles. El objetivo es ver cómo desarrollar con Docker Compose.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Desde el directorio del proyecto crear una carpeta <code>api</code> para la API.</p>
+</li>
+<li>
+<p>Crear un archivo <a href="https://gist.github.com/ualmtorres/581e7f6f15cda4d9c7e2b04c4fca3486"><code>.htaccess</code></a> que es necesario para rescribir las rutas en las peticiones a la API</p>
+</li>
+<li>
+<p>Crear un archivo <a href="https://gist.github.com/ualmtorres/068ce3477fbee09276a69e37b8cc664d"><code>index.php</code></a> con el código de la API.</p>
+</li>
+<li>
+<p>Crear el <a href="https://gist.github.com/ualmtorres/efebdfef3bb159ffd55f3a4321fef443"><code>Dockerfile</code></a> con las instrucciones para crear la imagen de la API</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-dockerfile" data-lang="dockerfile">FROM ualmtorres/phalcon-apache-ubuntu <i class="conum" data-value="1"></i><b>(1)</b>
+
+ADD . /var/www/html <i class="conum" data-value="2"></i><b>(2)</b>
+
+VOLUME /var/www/html <i class="conum" data-value="3"></i><b>(3)</b>
+
+EXPOSE 80 <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Imagen de base para la ejecución de la API. Incluye Apache, PHP y el framework Phalcon</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Incluir el código de la API en la carpeta de publicación de Apache</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Crear un punto de montaje para que se pueda tener la base de código fuera del contenedor</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Indicar el puerto por el que escucha el contenedor (80 por ser Apache)</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Crear en el directorio de la aplicación (un nivel por encima de <code>api</code>) el archivo <a href="https://gist.github.com/ualmtorres/dc5c2ad42f3bf5d3f625f9234c871cbf"><code>docker-compose.yml</code></a> para poder ejecutar la API.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml" data-lang="yaml">version: '2'
+services:
+  calificaciones-api:
+    container_name: calificaciones-api
+    restart: always
+    image: ualmtorres/phalcon-apache-ubuntu <i class="conum" data-value="1"></i><b>(1)</b>
+    ports:
+      - "80:80"
+    volumes:
+      - ./api:/var/www/html <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Imagen base para ejecutar la API</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Volumen en el host montado en el directorio <code>/var/www/html</code> del contenedor</td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Si desplegamos el <code>docker-compose.yml</code> veremos la API ejecutándose en el puerto 80</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/calificaciones-api.png" alt="calificaciones api.png">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truedesarrollo-del-front"><a class="anchor" href="#truedesarrollo-del-front"></a>6.2. Desarrollo del front</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Desde el directorio del proyecto crear una carpeta <code>front</code> para el código del front.</p>
+</li>
+<li>
+<p>Crear un archivo <a href="https://gist.github.com/ualmtorres/52811ce82117ca10bf2d58f53d54ccf4"><code>index.php</code></a> con el código del front.</p>
+</li>
+<li>
+<p>Crear el <a href="https://gist.github.com/ualmtorres/eeb473aec54e307d5bd73f49e72b5ec4"><code>Dockerfile</code></a> con las instrucciones para crear la imagen del front</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-dockerfile" data-lang="dockerfile">FROM php:7.2-apache <i class="conum" data-value="1"></i><b>(1)</b>
+
+ADD . /var/www/html <i class="conum" data-value="2"></i><b>(2)</b>
+
+VOLUME /var/www/html <i class="conum" data-value="3"></i><b>(3)</b>
+
+EXPOSE 80</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Imagen de base para la ejecución del front. Incluye Apache y PHP</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Incluir el código del front en la carpeta de publicación de Apache</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Crear un punto de montaje para que se pueda tener la base de código fuera del contenedor</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Indicar el puerto por el que escucha el contenedor (80 por ser Apache)</td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Modificar el archivo <code>docker-compose.yml</code> (un nivel por encima de <code>front</code>)  añadiéndole el servicio para poder ejecutar el front.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml" data-lang="yaml">version: '2'
+services:
+  calificaciones-api:
+    container_name: calificaciones-api
+    restart: always
+    image: ualmtorres/phalcon-apache-ubuntu
+    ports:
+      - "80:80"
+    volumes:
+      - ./api:/var/www/html
+  calificaciones-front: <i class="conum" data-value="1"></i><b>(1)</b>
+    container_name: calificaciones-front
+    restart: always
+    image: php:7.2-apache <i class="conum" data-value="2"></i><b>(2)</b>
+    ports:
+      - "8088:80" <i class="conum" data-value="3"></i><b>(3)</b>
+    volumes:
+      - ./front:/var/www/html <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Servicio para el front</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Imagen base para ejecutar el front</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Mapping de puertos para el front (El 80 está ocupado con la API)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Volumen en el host montado en el directorio <code>/var/www/html</code> del contenedor</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Si volvemos a desplegar el docker-compose.yml veremos el front ejecutándose en el puerto 8088</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/calificaciones-front.png" alt="calificaciones front.png">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueconstrucci-n-de-las-im-genes"><a class="anchor" href="#trueconstrucci-n-de-las-im-genes"></a>6.3. Construcción de las imágenes</h3>
+<div class="paragraph">
+<p>Una vez desarrollados los servicios de la aplicación podríamos proceder a la construcción de sus imágenes. Se trataría de un proceso manual en el que ejecutaríamos el comando <code>docker build</code> en cada una de los directorios de los servicios desarrollados</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>En el directorio de la API: <code>docker build -t ualmtorres/calificaciones-api:v0 .</code></p>
+</li>
+<li>
+<p>En el directorio del front: <code>docker build -t ualmtorres/calificaciones-front:v0 .</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueprueba-de-la-aplicaci-n"><a class="anchor" href="#trueprueba-de-la-aplicaci-n"></a>6.4. Prueba de la aplicación</h3>
+<div class="paragraph">
+<p>Si ahora quisiéramos desplegar la aplicación con Docker Compose nos encontramos con el problema que el archivo <code>docker-compose.yml</code> usa como imagen base las imágenes base creadas para el proceso de desarrollo. Sin embargo, ahora queremos desplegar la aplicación usando las imágenes creadas para la API y el front. Este problema lo podemos solventar rápidamente creando otro archivo para Docker Compose (p.e. <a href="https://gist.github.com/ualmtorres/80068c863b2dbe31d578ffed6897219f"><code>docker-compose-produccion.yml</code></a>) y lanzar Docker Compose con ese archivo. <code>docker-compose-produccion.yml</code> incluiría las imágenes creadas montando igualmente los directorios de las bases de código de la API y del front.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml" data-lang="yml">version: '2'
+services:
+  calificaciones-api:
+    container_name: calificaciones-api
+    restart: always
+    image: ualmtorres/calificaciones-api:v0 <i class="conum" data-value="1"></i><b>(1)</b>
+    ports:
+      - "80:80"
+    volumes:
+      - ./api:/var/www/html
+  calificaciones-front:
+    container_name: calificaciones-front
+    restart: always
+    image: ualmtorres/calificaciones-front:v0 <i class="conum" data-value="2"></i><b>(2)</b>
+    ports:
+      - "8088:80"
+    volumes:
+      - ./front:/var/www/html</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Imagen de la API como base</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Imagen del front como base</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truedocker-compose-con-la-opci-n-code-build-code"><a class="anchor" href="#truedocker-compose-con-la-opci-n-code-build-code"></a>6.5. Docker Compose con la opción <code>build</code></h3>
+<div class="paragraph">
+<p>El tener varios archivos para Docker Compose puede resultar confuso y en algunas ocasiones nos puede llevar a errores pensando que hemos usado uno cuando realmente estábamos usando el otro. Además, la creación de imágenes en un despliegue con gran cantidad de servicios implica la construcción manual de cada una de sus imágenes.</p>
+</div>
+<div class="paragraph">
+<p>Para evitar esta situación podemos usar la opción <code>build</code>. La opción <code>build</code> crealas imágenes a partir de los archivos <code>Dockerfile</code> que indiquemos y posteriormente crea el contenedor a partir de esa imagen. Para hacer esto, incluiremos dos paticularidades en el archivo <code>docker-compose.yml</code> con respecto a los que hemos estado usando hasta ahora:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Incluyen una opción <code>build</code> que indica el contexto donde encontrar el <code>Dockerfile</code> para crear la imagen del servicio</p>
+</li>
+<li>
+<p>El nombre de la imagen ahora no es el nombre de la imagen de base para crear el servicio, sino el nombre que se dará a la imagen construida para desplegar el servicio.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="title">Example 4. Archivo <a href="https://gist.github.com/ualmtorres/2734a52dfc6e1ea4f35bf3bc52d9c57e"><code>docker-compose.yml</code></a> para la construcción de imágenes</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml" data-lang="yaml">version: '2'
+services:
+  calificaciones-api:
+    build: <i class="conum" data-value="1"></i><b>(1)</b>
+      context: ./api <i class="conum" data-value="2"></i><b>(2)</b>
+    container_name: calificaciones-api
+    restart: always
+    image: ualmtorres/calificaciones-api:v0 <i class="conum" data-value="3"></i><b>(3)</b>
+    ports:
+      - "80:80"
+    volumes:
+      - ./api:/var/www/html
+
+  calificaciones-front:
+    build: <i class="conum" data-value="4"></i><b>(4)</b>
+      context: ./front <i class="conum" data-value="5"></i><b>(5)</b>
+    container_name: calificaciones-front
+    restart: always
+    image: ualmtorres/calificaciones-front:v0 <i class="conum" data-value="6"></i><b>(6)</b>
+    ports:
+      - "8088:80"
+    volumes:
+      - ./front:/var/www/html</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Opción <code>build</code> para construir la imagen</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Ruta del <code>Dockerfile</code> de la API</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Nombre para la imagen de la API</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Opción <code>build</code> para construir la imagen</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Ruta del <code>Dockerfile</code> del front</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Nombre para la imagen del front</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Para comprobar el funcionamiento de este nuevo procedimiento, eliminaremos todo rastro de lo anterior echando abajo el despliegue anterior y borrando las imágenes creadas anteriormente.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker-compose down
+$ docker image rm ualmtorres/calificaciones-api:v0
+$ docker image rm ualmtorres/calificaciones-front:v0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A continuación, basta con volver a levantar el entorno com <code>docker-compose up -d</code> y veremos como se construyen las imágenes para el despliegue de los contenedores y los servicios de Docker Compose funcionan correctamte.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/calificaciones-front.png" alt="calificaciones front.png">
+</div>
+</div>
+<div class="paragraph">
+<p>Cuando introduzcamos cambios en la base de código y queramos volver a desplegarlos sobre las imágenes podremos ejecutar cualquiera de estos dos comandos:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker-compose build
+$ docker-compose up --build</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="trueotras-cosas-interesantes"><a class="anchor" href="#trueotras-cosas-interesantes"></a>7. Otras cosas interesantes</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="truemicroservicios-y-contenedores"><a class="anchor" href="#truemicroservicios-y-contenedores"></a>7.1. Microservicios y contenedores</h3>
+<h3 id="trueconfiguraci-n-de-im-genes-de-base"><a class="anchor" href="#trueconfiguraci-n-de-im-genes-de-base"></a>7.1. Configuración de imágenes de base</h3>
+<div class="paragraph">
+<p>Aquí se muestra cómo configurar una imagen con Ubuntu 18.04, PHP y el framework Phalcon. También se muestran los dos archivos auxiliares necesarios para la configuración de Apache que necesita Phalcon.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 5. Dockerfile</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-dockerfile" data-lang="dockerfile">FROM ubuntu:18.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update &amp;&amp; apt-get install -yq --no-install-recommends \
+    apt-utils \
+    curl \
+    # Install git
+    git \
+    # Install apache
+    apache2 \
+    # Install last version of PHP
+    php \
+    libapache2-mod-php \
+    php-mcrypt \
+    php-mysql \
+    php-curl \
+    nano \
+    ca-certificates \
+    locales \
+    &amp;&amp; apt-get clean &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+RUN curl -s "https://packagecloud.io/install/repositories/phalcon/stable/script.deb.sh" | /bin/bash
+
+RUN apt-get install -y php7.0-phalcon
+
+# Set locales
+RUN locale-gen en_US.UTF-8 en_GB.UTF-8 es_ES.UTF-8
+
+COPY conf/apache2.conf /etc/apache2/apache2.conf
+COPY conf/dir.conf /etc/apache2/mods-available/dir.conf
+
+RUN a2enmod rewrite
+RUN a2enmod headers
+RUN service apache2 restart
+
+EXPOSE 80 443
+
+WORKDIR /var/www/html
+
+RUN rm /var/www/html/index.html
+
+HEALTHCHECK --interval=5s --timeout=3s --retries=3 CMD curl -f http://localhost || exit 1
+
+CMD apachectl -D FOREGROUND</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 6. Archivo <code>conf/apache2.conf</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-apache" data-lang="apache">Mutex file:${APACHE_LOCK_DIR} default
+
+PidFile ${APACHE_PID_FILE}
+
+Timeout 300
+
+KeepAlive On
+
+MaxKeepAliveRequests 100
+
+KeepAliveTimeout 5
+
+User ${APACHE_RUN_USER}
+Group ${APACHE_RUN_GROUP}
+
+HostnameLookups Off
+
+ErrorLog ${APACHE_LOG_DIR}/error.log
+
+LogLevel warn
+
+IncludeOptional mods-enabled/*.load
+IncludeOptional mods-enabled/*.conf
+
+Include ports.conf
+
+&lt;Directory /&gt;
+	Options FollowSymLinks
+	AllowOverride None
+	Require all denied
+&lt;/Directory&gt;
+
+&lt;Directory /usr/share&gt;
+	AllowOverride None
+	Require all granted
+&lt;/Directory&gt;
+
+&lt;Directory /var/www/&gt;
+	Options Indexes FollowSymLinks
+	AllowOverride All
+	Require all granted
+	Header set Access-Control-Allow-Origin "*"
+&lt;/Directory&gt;
+
+AccessFileName .htaccess
+
+&lt;FilesMatch "^\.ht"&gt;
+	Require all denied
+&lt;/FilesMatch&gt;
+
+LogFormat "%v:%p %h %l %u %t \"%r\" %&gt;s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+LogFormat "%h %l %u %t \"%r\" %&gt;s %O \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%h %l %u %t \"%r\" %&gt;s %O" common
+LogFormat "%{Referer}i -&gt; %U" referer
+LogFormat "%{User-agent}i" agent
+
+IncludeOptional conf-enabled/*.conf
+
+IncludeOptional sites-enabled/*.conf</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 7. Archivo <code>conf/dir.conf</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-apache" data-lang="apache">&lt;IfModule mod_dir.c&gt;
+	DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm
+&lt;/IfModule&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truemicroservicios-y-contenedores"><a class="anchor" href="#truemicroservicios-y-contenedores"></a>7.2. Microservicios y contenedores</h3>
 <div class="paragraph">
 <p>Con microservicios:</p>
 </div>
@@ -1972,7 +2715,7 @@ services:
 </div>
 </div>
 <div class="sect2">
-<h3 id="trueel-ecosistema-docker"><a class="anchor" href="#trueel-ecosistema-docker"></a>7.2. El ecosistema Docker</h3>
+<h3 id="trueel-ecosistema-docker"><a class="anchor" href="#trueel-ecosistema-docker"></a>7.3. El ecosistema Docker</h3>
 <div class="imageblock">
 <div class="content">
 <img src="./images/DockerEcosystem.png" alt="DockerEcosystem.png" width="100%">
@@ -1980,7 +2723,7 @@ services:
 </div>
 </div>
 <div class="sect2">
-<h3 id="trueinstalar-un-registro-de-im-genes-propio"><a class="anchor" href="#trueinstalar-un-registro-de-im-genes-propio"></a>7.3. Instalar un registro de imágenes propio</h3>
+<h3 id="trueinstalar-un-registro-de-im-genes-propio"><a class="anchor" href="#trueinstalar-un-registro-de-im-genes-propio"></a>7.4. Instalar un registro de imágenes propio</h3>
 <div class="paragraph">
 <p>Es posible tener un registro propio para imágenes por cuestiones de seguridad y confidencialidad. Veamos cómo crear un registro propio mediante contenedores (uno para el registro en sí y otro cono Web UI).</p>
 </div>
@@ -1989,7 +2732,7 @@ services:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">// En el servidor (p.e. 192.168.65.103)
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">// En el servidor (p.e. 192.168.65.103)
 $ docker run -d -p 5000:5000 --restart always --name registry registry:2
 $ docker run \
   -d \
@@ -2030,111 +2773,8 @@ $ docker push 192.168.65.103:5000/alpine <i class="conum" data-value="4"></i><b>
 <img src="./images/RegistroPropio.png" alt="RegistroPropio.png">
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="trueconexi-n-a-daemons-docker-remotos"><a class="anchor" href="#trueconexi-n-a-daemons-docker-remotos"></a>7.4. Conexión a daemons Docker remotos</h3>
 <div class="paragraph">
-<p>Util para conectarnos desde nuestro equipo al Docker de producción o al de  pruebas</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Crear en local un archivo de variables de entorno (p.e. <code>DockerProyectoBrainstorm.sh</code>)</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">export DOCKER_TLS_VERIFY=1
-export DOCKER_CERT_PATH="&lt;ruta completa de certificado&gt;"
-export DOCKER_HOST="tcp://&lt;IP o nombre DNS&gt;:443"</code></pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Después, <code>source DockerProyectoBrainstorm.sh</code> y ¡¡Estamos conectados!!</p>
-</li>
-<li>
-<p>Si la conexión fuera abierta, indicaríamos <code>export DOCKER_TLS_VERIFY=0</code>.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="trueuso-de-haproxy"><a class="anchor" href="#trueuso-de-haproxy"></a>7.5. Uso de HAProxy</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code>docker-compose.yml
-version: '3'
-services:
-  php:
-    image: ualmtorres/phalcon-apache-ubuntu
-    ports:
-      - "80"
-    environment:
-     - SERVICE_PORTS=80 <i class="conum" data-value="1"></i><b>(1)</b>
-    volumes:
-      - ./html:/var/www/html
-    deploy:
-      replicas: 6
-      resources:
-        limits:
-          cpus: "0.1"
-          memory: 50M
-      restart_policy:
-        condition: on-failure
-    networks:
-      - webnet
-  visualizer:
-    image: dockersamples/visualizer:stable
-    ports:
-      - "8080:8080"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-    networks:
-      - webnet
-  proxy: <i class="conum" data-value="2"></i><b>(2)</b>
-    image: dockercloud/haproxy
-    depends_on:
-      - php <i class="conum" data-value="3"></i><b>(3)</b>
-    environment:
-      - BALANCE=leastconn <i class="conum" data-value="4"></i><b>(4)</b>
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - 80:80
-    networks:
-      - webnet
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-networks:
-  webnet:</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Cambio en la configuración de puertos para usar HAProxy</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Servicio <code>proxy</code></td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>No crear el servicio <code>proxy</code> hasta que no se haya creado el <code>php</code></td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Usa la política de balanceo <em>least connections</em> en lugar de la <em>round robin</em> predeterminada</td>
-</tr>
-</table>
+<p><a href="https://goharbor.io/">Harbor</a> es una opción muy interesante para disponer de un registro propio de imágenes. Permite definir reglas de control de acceso, analizar imágenes en busca de vulnerabilidades y añadir una firma de confianza a las imágenes.</p>
 </div>
 </div>
 </div>
@@ -2142,8 +2782,11 @@ networks:
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-18 19:40:19 CEST
+Last updated 2020-04-19 18:12:08 CEST
 </div>
 </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+<script>hljs.initHighlighting()</script>
 </body>
 </html>

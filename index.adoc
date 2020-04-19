@@ -1348,3 +1348,29 @@ image::./RegistroPropio.png[]
 
 https://goharbor.io/[Harbor] es una opción muy interesante para disponer de un registro propio de imágenes. Permite definir reglas de control de acceso, analizar imágenes en busca de vulnerabilidades y añadir una firma de confianza a las imágenes.
 
+Para subir una imagen a Harbor:
+
+1. Es necesario pertenecer a un proyecto
+1. Iniciar sesión
+
++
+[source,bash]
+----
+$ docker login <harbor-server>
+----
+
+1. Etiquetar la imagen siguiendo este patrón
+
++
+[source,bash]
+----
+$ docker tag <image> <server>/<project>/<image>[:<version>]
+----
+
+1. Subir imagen 
+
++
+[source,bash]
+----
+$ docker push <server>/<project>/<image>[:<version>]
+----

@@ -2779,13 +2779,47 @@ $ docker push 192.168.65.103:5000/alpine <i class="conum" data-value="4"></i><b>
 <div class="paragraph">
 <p><a href="https://goharbor.io/">Harbor</a> es una opción muy interesante para disponer de un registro propio de imágenes. Permite definir reglas de control de acceso, analizar imágenes en busca de vulnerabilidades y añadir una firma de confianza a las imágenes.</p>
 </div>
+<div class="paragraph">
+<p>Para subir una imagen a Harbor:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Es necesario pertenecer a un proyecto</p>
+</li>
+<li>
+<p>Iniciar sesión</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker login &lt;harbor-server&gt;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Etiquetar la imagen siguiendo este patrón</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker tag &lt;image&gt; &lt;server&gt;/&lt;project&gt;/&lt;image&gt;[:&lt;version&gt;]</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Subir imagen</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker push &lt;server&gt;/&lt;project&gt;/&lt;image&gt;[:&lt;version&gt;]</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-19 19:53:21 CEST
+Last updated 2020-04-19 20:31:28 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

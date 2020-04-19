@@ -13,7 +13,7 @@ Codificación, idioma, tabla de contenidos, tipo de documento
 ////
 Nombre y título del trabajo
 ////
-# Uso básico de Docker
+# Desarrollo de aplicaciones con Docker
 Servicio de las Tecnologías de la Información y las Comunicaciones - Universidad de Almería
 
 image::logocloudstic.png[]
@@ -29,7 +29,7 @@ COLOCA A CONTINUACION EL RESUMEN
 ////
 Docker es un proyecto open source creado en 2013 y que ha supuesto una revolución para el desarrollo y despliegue de operaciones. Docker abstrae el hardware y el sistema operativo del host ejecutando las aplicaciones en contenedores, compartimentos aislados que contienen todos los recursos para una aplicación o servicio.
 
-En este seminario veremos cómo usar Docker para el desarrollo de aplicaciones sencillas, aprendiendo a crear servicios con _Docker Compose_, clusters con _Docker Swarm_ e interactuar de forma remota con _Docker machine_
+En este seminario veremos cómo usar Docker para el desarrollo de aplicaciones sencillas, aprendiendo a crear servicios con _Docker Compose_ y concer la técnica de desarrollo de aplicaciones multicontenedor con _Docker Compose_
 
 
 ////
@@ -39,11 +39,9 @@ COLOCA A CONTINUACION LOS OBJETIVOS
 * Conocer los componentes básicos de Docker
 * Crear contenedores a partir de imágenes de Docker Hub
 * Aprender a usar `Dockerfile` para la creación de imágenes 
-* Usar _Docker Compose_ para construir entornos de contenedores
 * Usar volúmenes para almacenamiento persistente
-* Estudiar _Docker Swarm_ para el escalado de aplicaciones
-* Crear clusters con _Docker Machine_
-* Estudiar ejemplos de entornos elásticos
+* Usar _Docker Compose_ para construir entornos de contenedores
+* Aprender la técnica de desarrollo de aplicaciones multicontenedor con _Docker Compose_
 
 [TIP]
 ====

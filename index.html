@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5.dev">
 <meta name="author" content="Servicio de las Tecnologías de la Información y las Comunicaciones - Universidad de Almería">
-<title>Uso básico de Docker</title>
+<title>Desarrollo de aplicaciones con Docker</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -421,7 +421,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="book toc2 toc-right">
 <div id="header">
-<h1>Uso básico de Docker</h1>
+<h1>Desarrollo de aplicaciones con Docker</h1>
 <div class="details">
 <span id="author" class="author">Servicio de las Tecnologías de la Información y las Comunicaciones - Universidad de Almería</span><br>
 </div>
@@ -504,7 +504,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Docker es un proyecto open source creado en 2013 y que ha supuesto una revolución para el desarrollo y despliegue de operaciones. Docker abstrae el hardware y el sistema operativo del host ejecutando las aplicaciones en contenedores, compartimentos aislados que contienen todos los recursos para una aplicación o servicio.</p>
 </div>
 <div class="paragraph">
-<p>En este seminario veremos cómo usar Docker para el desarrollo de aplicaciones sencillas, aprendiendo a crear servicios con <em>Docker Compose</em>, clusters con <em>Docker Swarm</em> e interactuar de forma remota con <em>Docker machine</em></p>
+<p>En este seminario veremos cómo usar Docker para el desarrollo de aplicaciones sencillas, aprendiendo a crear servicios con <em>Docker Compose</em> y concer la técnica de desarrollo de aplicaciones multicontenedor con <em>Docker Compose</em></p>
 </div>
 <div class="ulist">
 <div class="title">Objetivos</div>
@@ -519,19 +519,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Aprender a usar <code>Dockerfile</code> para la creación de imágenes</p>
 </li>
 <li>
-<p>Usar <em>Docker Compose</em> para construir entornos de contenedores</p>
-</li>
-<li>
 <p>Usar volúmenes para almacenamiento persistente</p>
 </li>
 <li>
-<p>Estudiar <em>Docker Swarm</em> para el escalado de aplicaciones</p>
+<p>Usar <em>Docker Compose</em> para construir entornos de contenedores</p>
 </li>
 <li>
-<p>Crear clusters con <em>Docker Machine</em></p>
-</li>
-<li>
-<p>Estudiar ejemplos de entornos elásticos</p>
+<p>Aprender la técnica de desarrollo de aplicaciones multicontenedor con <em>Docker Compose</em></p>
 </li>
 </ul>
 </div>
@@ -2416,12 +2410,12 @@ services:
 <p>El tener varios archivos para Docker Compose puede resultar confuso y en algunas ocasiones nos puede llevar a errores pensando que hemos usado uno cuando realmente estábamos usando el otro. Además, la creación de imágenes en un despliegue con gran cantidad de servicios implica la construcción manual de cada una de sus imágenes.</p>
 </div>
 <div class="paragraph">
-<p>Para evitar esta situación podemos usar la opción <code>build</code>. La opción <code>build</code> crealas imágenes a partir de los archivos <code>Dockerfile</code> que indiquemos y posteriormente crea el contenedor a partir de esa imagen. Para hacer esto, incluiremos dos paticularidades en el archivo <code>docker-compose.yml</code> con respecto a los que hemos estado usando hasta ahora:</p>
+<p>Para evitar esta situación podemos usar la opción <code>build</code>. La opción <code>build</code> crea las imágenes a partir de los archivos <code>Dockerfile</code> que indiquemos y posteriormente crea el contenedor a partir de esa imagen. Para hacer esto, incluiremos dos paticularidades en el archivo <code>docker-compose.yml</code> con respecto a los que hemos estado usando hasta ahora:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Incluyen una opción <code>build</code> que indica el contexto donde encontrar el <code>Dockerfile</code> para crear la imagen del servicio</p>
+<p>Incluir una opción <code>build</code> que indica el contexto donde encontrar el <code>Dockerfile</code> para crear la imagen del servicio.</p>
 </li>
 <li>
 <p>El nombre de la imagen ahora no es el nombre de la imagen de base para crear el servicio, sino el nombre que se dará a la imagen construida para desplegar el servicio.</p>
@@ -2782,7 +2776,7 @@ $ docker push 192.168.65.103:5000/alpine <i class="conum" data-value="4"></i><b>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-19 18:12:08 CEST
+Last updated 2020-04-19 18:46:29 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

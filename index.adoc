@@ -8,6 +8,7 @@ Codificación, idioma, tabla de contenidos, tipo de documento
 :toc-title: Tabla de contenidos
 :doctype: book
 :imagesdir: ./images
+:figure-caption: Figura
 :linkattrs:
 
 ////
@@ -72,11 +73,12 @@ Docker permite empaquetar una aplicación con todas sus dependencias para que pu
 
 Basta con ejecutar los tres comandos siguientes en una máquina con Docker instalado para tener una aplicación web que muestra un catálogo de clientes almacenados en una base de datos MySQL.
 
-```
+[source, bash]
+----
 $ git clone https://github.com/ualmtorres/docker_customer_catalog.git
 $ cd docker_customer_catalog
 $ docker-compose up -d
-```
+----
 
 .Aplicación sencilla que muestra un listado de clientes de una base de datos
 image::./CustomerCatalog.png[]
@@ -138,7 +140,7 @@ Obtenemos:
 
 .Configuración de Shared Drices en Docker for Windows
 ****
-A la hora de configurar volúmenes para poder ofrecer persistencia a los contenedodres, los discos locales han de ser accesibles desde los contenedores creados. Para ello hay que que configurar `Docker Desktop` desde la barra de menús.
+A la hora de configurar volúmenes para poder ofrecer persistencia a los contenedodres, los discos locales han de ser accesibles desde los contenedores creados. En versiones anteriores de Docker Desktop para Windows hay que que configurar `Docker Desktop` desde la barra de menús.
 
 Seleccionar `Settings | Shared Drives` y seleccionar las unidades que pueden ser usadas por los contenedores.
 
@@ -331,6 +333,11 @@ $ docker exec -it 99f6727e2506 bash
 root@99f6727e2506:/usr/local/apache2# 
 ```
 
+[NOTE]
+====
+Git Bash no permite abrir un terminal en un contenedor en Windows. Usar PowerShell o Símbolo del sistema.
+====
+
 Se inicia una sesión como `root` en el contenedor. En la terminal del contenedor podemos ejecutar comandos del sistema operativo (`ls, df -h, cat /proc/cpuinfo, ...`). La cantidad y el tipo de comandos dependerá de la imagen usada para crear el contenedor.
 
 #### Copia de datos
@@ -466,18 +473,31 @@ El resultado sería el siguiente
 image::webEstaticaBasica.png[]
 ====
 
-[NOTE]
-====
+.Bind Mounts con `pwd` en Windows
+****
 Existen varias formas de expresar el directorio actual para facilitar la especificación de la ruta local.
 
 * Interfaz de comandos de Windows: `%cd%`
 * Powershell, Linux y Mac OS: `${PWD}` ó `$(pwd)`
-====
+* Ruta combinada en Git Bash: 
+** `//"$(pwd)"/webEstaticaBasica`
+* Ruta combinada en Powershell: 
+** `/host_mnt/"$(pwd)"/webEstaticaBasica`
+** `//"$(pwd)"/webEstaticaBasica`
+****
 
 .Ilustración de _bind mount_ con una base de datos MySQL
 ====
 1. Crear una carpeta para este ejemplo y entrar en ella.
 1. Descargar este https://gist.githubusercontent.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f/raw/448b00c44d7102d66077a393dad555585862f923/init.sql[script de inicialización de la base de datos _Sporting Goods_]
+
++
+[source, bash]
+----
+$ curl https://gist.githubusercontent.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f/raw/448b00c44d7102d66077a393dad555585862f923/init.sql --output init.sql
+----
+
++
 1. Lanzar un contenedor MySQL con dos _bind mounts_, uno para inyectar el archivo de inicialización anterior, y otro para la carpeta de datos
 
 ```bash
@@ -495,8 +515,31 @@ $ docker run -d \
 <4> _bind mount_ para almacenar los datos del contenedor localmente en la carpeta `data`
 <5> Inicialización de la contraseña del `root`. Se configura inicializando una variable de entorno en el contenedor.
 <6> Usar la imagen de MySQL
+
+En Windows (con Git Bash o PowerShell) sería:
+
+[source, bash]
+----
+docker run -d \
+    -p 3306:3306 \
+    --name my-mysql \
+    -v /"$(pwd)"/init.sql:/docker-entrypoint-initdb.d/init.sql \
+    -v /"$(pwd)"/data:/var/lib/mysql \
+    -e MYSQL_ROOT_PASSWORD=secret \
+    mysql
+----
+
 ====
 
+[IMPORTANT]
+====
+En Windows (con Git Bash o PowerShell) el comando sería
+
+[source, bash]
+----
+$ docker run -d -p 80:80 --name my-web -v /"$(pwd)"/webEstaticaBasica:/usr/local/apache2/htdocs httpd
+----
+====
 A partir de este ejemplo, usando un cliente local de MySQL se podría acceder al contenedor directamente como `localhost`. 
 
 Si no se dispone de un cliente MySQL para ver si se ha inicializado correctamente la base de datos, se puede iniciar una sesión interactiva en el contenedor creado
@@ -653,7 +696,7 @@ Vamos a construir un contenedor a partir del código del repositorio y lo ofrezc
 $ git clone https://github.com/ualmtorres/webEstaticaBasica.git
 ```
 
-1. Creación del `Dockerfile` para la construcción de la imagen.
+1. Creación del `Dockerfile` en la carpeta `webEstaticaBasica` para la construcción de la imagen.
 
 +
 ```
@@ -710,6 +753,20 @@ $ docker run -d \
 ```
 
 [NOTE]
+====
+En Windows sería
+
+[source, bash]
+----
+docker run -d \
+    -p 83:80 \
+    --name webEstaticaBasica \
+    -v /"$(pwd)":/var/www/html \
+    ualmtorres/web-estatica-basica:v0
+---
+====
+
+[TIP]
 ====
 A la hora de distribuir y actualizar aplicaciones podemos incluir la aplicación en la imagen. Con un ciclo de CI/CD tendríamos la aplicación actualizada al actualizar su repositorio.
 ====
@@ -833,8 +890,14 @@ services:
 Para lanzar la aplicación multicontenedor ejecutaremos el comando
 
 ```
+$ cd docker_customer_catalog
 $ docker-compose up -d
 ```
+
+[NOTE]
+====
+Este archivo despliega un contenedor denominado `mysql` en el puerto `3306` del host y otro contenedor denominado `php` en el puerto `80` del host. No podrá haber otros contenedores en el host, aunque estén parados` con esos nombres y esos puertos deberán estar libres.
+====
 
 Esto creará un contenedor para cada servicio y una red para que los contenedores de los servicios se puedan comunicar entre sí. El nombre de la red vendrá determinado por el nombre del directorio desde donde se lance Docker Compose. Los contenedores podrán referenciarse unos a otros por el nombre del contenedor.
 
@@ -855,7 +918,7 @@ PING mysql (192.168.32.3) 56(84) bytes of data.
 
 [IMPORTANT]
 ====
-Aunque en el `docker-compose.yml` es posible asignar un nombre diferente al contenedor que al servicio al que pertenece, se recomienda usar el mismo nombre. *Los contenedores desplegados con  Docker Compose realmente usan el nombre de los contenedores para referenciarse unos a otros. Por eso, para evitar consfusiones, mejor usar el mismo nombre para servicio y para contenedor.*
+Aunque en el `docker-compose.yml` es posible asignar un nombre diferente al contenedor que al servicio al que pertenece, se recomienda usar el mismo nombre. *Los contenedores desplegados con  Docker Compose realmente usan el nombre de los contenedores para referenciarse unos a otros. Por eso, para evitar confusiones, mejor usar el mismo nombre para servicio y para contenedor.*
 ====
 
 .Archivo `index.php` con el código de la aplicación
@@ -957,14 +1020,20 @@ A la hora de desarrollar una aplicación con varios contenedores que tienen que 
 
 Para ilustrar esto usaremos un ejemplo ficticio que desarrolle una API con calificaciones y un front para presentar los datos de la API. A continuación se muestran los pasos:
 
+[source, bash]
+----
+$ mkdir calificaciones
+$ cd calificaciones
+----
+
 ### Desarrollo de la API
 
 Se trata de una API en PHP con Phalcon. La API contiene los datos directamente en JSON para no añadir otro componente de bases de datos al ejemplo, conseguir un ejemplo más sencillo y no perdernos en los detalles. El objetivo es ver cómo desarrollar con Docker Compose.
 
 1. Desde el directorio del proyecto crear una carpeta `api` para la API.
-1. Crear un archivo https://gist.github.com/ualmtorres/581e7f6f15cda4d9c7e2b04c4fca3486[`.htaccess`] que es necesario para rescribir las rutas en las peticiones a la API
-1. Crear un archivo https://gist.github.com/ualmtorres/068ce3477fbee09276a69e37b8cc664d[`index.php`] con el código de la API.
-1. Crear el https://gist.github.com/ualmtorres/efebdfef3bb159ffd55f3a4321fef443[`Dockerfile`] con las instrucciones para crear la imagen de la API
+1. Crear un archivo https://gist.githubusercontent.com/ualmtorres/581e7f6f15cda4d9c7e2b04c4fca3486/raw/75624e5ae0275c52d3246812bf8eda87ba5bb188/.htaccess[`.htaccess`] que es necesario para rescribir las rutas en las peticiones a la API
+1. Crear un archivo https://gist.githubusercontent.com/ualmtorres/068ce3477fbee09276a69e37b8cc664d/raw/1a4e2ce4688a93c67dcb095c52e7453253833bcb/selectividad-api-index.php[`index.php`] con el código de la API.
+1. Crear el https://gist.githubusercontent.com/ualmtorres/efebdfef3bb159ffd55f3a4321fef443/raw/46dc719ee4c0ac7a8ec06857be8452258f3f6647/Dockerfile-Phalcon[`Dockerfile`] con las instrucciones para crear la imagen de la API
 
 +
 [source,dockerfile]
@@ -982,7 +1051,7 @@ EXPOSE 80 <4>
 <3> Crear un punto de montaje para que se pueda tener la base de código fuera del contenedor
 <4> Indicar el puerto por el que escucha el contenedor (80 por ser Apache)
 
-1. Crear en el directorio de la aplicación (un nivel por encima de `api`) el archivo https://gist.github.com/ualmtorres/dc5c2ad42f3bf5d3f625f9234c871cbf[`docker-compose.yml`] para poder ejecutar la API.
+1. Crear en el directorio de la aplicación (un nivel por encima de `api`) el archivo https://gist.githubusercontent.com/ualmtorres/dc5c2ad42f3bf5d3f625f9234c871cbf/raw/78c935771f75bafaff3ff183251b7ccf1150bf0e/docker-compose-solo-api.yml[`docker-compose.yml`] para poder ejecutar la API. El archivo `docker-compose.yml` lo creamos un directorio por encima de `api` porque la especificación del volumen del código de la API en el archivo `docker-compose.yml` se hace un nivel por encima del directorio `api`
 
 +
 [source,yaml]
@@ -1001,7 +1070,7 @@ services:
 <1> Imagen base para ejecutar la API
 <2> Volumen en el host montado en el directorio `/var/www/html` del contenedor
 
-Si desplegamos el `docker-compose.yml` veremos la API ejecutándose en el puerto 80
+Si desplegamos el `docker-compose.yml` veremos la API ejecutándose en el puerto 80 (`http://localhost/calification`)
 
 image::calificaciones-api.png[]
 
@@ -1055,7 +1124,7 @@ services:
 <3> Mapping de puertos para el front (El 80 está ocupado con la API)
 <4> Volumen en el host montado en el directorio `/var/www/html` del contenedor
 
-Si volvemos a desplegar el docker-compose.yml veremos el front ejecutándose en el puerto 8088
+Si volvemos a desplegar el `docker-compose.yml` con `docker-compose up -d`, se mantiene intacto lo ya desplegado y se despliegan las modificaciones. El front se verá ejecutándose en el puerto 8088
 
 image::calificaciones-front.png[]
 
@@ -1098,7 +1167,7 @@ services:
 
 El tener varios archivos para Docker Compose puede resultar confuso y en algunas ocasiones nos puede llevar a errores pensando que hemos usado uno cuando realmente estábamos usando el otro. Además, la creación de imágenes en un despliegue con gran cantidad de servicios implica la construcción manual de cada una de sus imágenes.
 
-Para evitar esta situación podemos usar la opción `build`. La opción `build` crea las imágenes a partir de los archivos `Dockerfile` que indiquemos y posteriormente crea el contenedor a partir de esa imagen. Para hacer esto, incluiremos dos paticularidades en el archivo `docker-compose.yml` con respecto a los que hemos estado usando hasta ahora:
+Para evitar esta situación podemos usar la opción `build`. La opción `build` crea las imágenes a partir de los archivos `Dockerfile` que indiquemos y posteriormente crea el contenedor a partir de esa imagen. Para hacer esto, incluiremos dos particularidades en el archivo `docker-compose.yml` con respecto a los que hemos estado usando hasta ahora:
 
 * Incluir una opción `build` que indica el contexto donde encontrar el `Dockerfile` para crear la imagen del servicio.
 * El nombre de la imagen ahora no es el nombre de la imagen de base para crear el servicio, sino el nombre que se dará a la imagen construida para desplegar el servicio.

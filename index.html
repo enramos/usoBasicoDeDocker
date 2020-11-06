@@ -601,7 +601,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code>$ git clone https://github.com/ualmtorres/docker_customer_catalog.git
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ git clone https://github.com/ualmtorres/docker_customer_catalog.git
 $ cd docker_customer_catalog
 $ docker-compose up -d</code></pre>
 </div>
@@ -610,7 +610,7 @@ $ docker-compose up -d</code></pre>
 <div class="content">
 <img src="./images/CustomerCatalog.png" alt="CustomerCatalog.png">
 </div>
-<div class="title">Figure 1. Aplicación sencilla que muestra un listado de clientes de una base de datos</div>
+<div class="title">Figura 1. Aplicación sencilla que muestra un listado de clientes de una base de datos</div>
 </div>
 <div class="paragraph">
 <p>Para detener el ejemplo anterior, desde la carpeta donde se ha desplegado la aplicación ejecutaremos</p>
@@ -630,7 +630,7 @@ $ docker-compose up -d</code></pre>
 <div class="content">
 <img src="./images/DockerVsMV.png" alt="DockerVsMV.png">
 </div>
-<div class="title">Figure 2. Docker vs Máquinas virtuales</div>
+<div class="title">Figura 2. Docker vs Máquinas virtuales</div>
 </div>
 <div class="ulist">
 <ul>
@@ -746,7 +746,7 @@ $ docker-compose up -d</code></pre>
 <div class="content">
 <div class="title">Configuración de Shared Drices en Docker for Windows</div>
 <div class="paragraph">
-<p>A la hora de configurar volúmenes para poder ofrecer persistencia a los contenedodres, los discos locales han de ser accesibles desde los contenedores creados. Para ello hay que que configurar <code>Docker Desktop</code> desde la barra de menús.</p>
+<p>A la hora de configurar volúmenes para poder ofrecer persistencia a los contenedodres, los discos locales han de ser accesibles desde los contenedores creados. En versiones anteriores de Docker Desktop para Windows hay que que configurar <code>Docker Desktop</code> desde la barra de menús.</p>
 </div>
 <div class="paragraph">
 <p>Seleccionar <code>Settings | Shared Drives</code> y seleccionar las unidades que pueden ser usadas por los contenedores.</p>
@@ -787,7 +787,7 @@ También permite automatizar la construcción de imágenes y su despliegue con r
 <div class="content">
 <img src="./images/DockerEngine.png" alt="DockerEngine.png">
 </div>
-<div class="title">Figure 3. Componentes de Docker Engine</div>
+<div class="title">Figura 3. Componentes de Docker Engine</div>
 </div>
 </div>
 <div class="sect2">
@@ -891,7 +891,7 @@ Status: Downloaded newer image for hello-world:latest</code></pre>
 <div class="content">
 <img src="./images/Apache.png" alt="Apache.png">
 </div>
-<div class="title">Figure 4. Contenedor ejecutando Apache</div>
+<div class="title">Figura 4. Contenedor ejecutando Apache</div>
 </div>
 </div>
 <div class="sect2">
@@ -900,7 +900,7 @@ Status: Downloaded newer image for hello-world:latest</code></pre>
 <div class="content">
 <img src="./images/FuncionamientoBasico.png" alt="FuncionamientoBasico.png" width="100%">
 </div>
-<div class="title">Figure 5. Funcionamiento básico con Docker</div>
+<div class="title">Figura 5. Funcionamiento básico con Docker</div>
 </div>
 </div>
 <div class="sect2">
@@ -1081,6 +1081,20 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 root@99f6727e2506:/usr/local/apache2#</code></pre>
 </div>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Git Bash no permite abrir un terminal en un contenedor en Windows. Usar PowerShell o Símbolo del sistema.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Se inicia una sesión como <code>root</code> en el contenedor. En la terminal del contenedor podemos ejecutar comandos del sistema operativo (<code>ls, df -h, cat /proc/cpuinfo, &#8230;&#8203;</code>). La cantidad y el tipo de comandos dependerá de la imagen usada para crear el contenedor.</p>
 </div>
@@ -1132,7 +1146,7 @@ docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH</code></pre>
 <div class="content">
 <img src="./images/CambioIndexApache.png" alt="CambioIndexApache.png">
 </div>
-<div class="title">Figure 6. Cambio de página de inicio</div>
+<div class="title">Figura 6. Cambio de página de inicio</div>
 </div>
 </div>
 <div class="sect3">
@@ -1311,13 +1325,9 @@ $ docker run -d \
 </div>
 </div>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Bind Mounts con <code>pwd</code> en Windows</div>
 <div class="paragraph">
 <p>Existen varias formas de expresar el directorio actual para facilitar la especificación de la ruta local.</p>
 </div>
@@ -1329,11 +1339,32 @@ $ docker run -d \
 <li>
 <p>Powershell, Linux y Mac OS: <code>${PWD}</code> ó <code>$(pwd)</code></p>
 </li>
+<li>
+<p>Ruta combinada en Git Bash:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>//"$(pwd)"/webEstaticaBasica</code></p>
+</li>
 </ul>
 </div>
-</td>
-</tr>
-</table>
+</li>
+<li>
+<p>Ruta combinada en Powershell:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>/host_mnt/"$(pwd)"/webEstaticaBasica</code></p>
+</li>
+<li>
+<p><code>//"$(pwd)"/webEstaticaBasica</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
 </div>
 <div class="exampleblock">
 <div class="title">Example 2. Ilustración de <em>bind mount</em> con una base de datos MySQL</div>
@@ -1345,6 +1376,11 @@ $ docker run -d \
 </li>
 <li>
 <p>Descargar este <a href="https://gist.githubusercontent.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f/raw/448b00c44d7102d66077a393dad555585862f923/init.sql">script de inicialización de la base de datos <em>Sporting Goods</em></a></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ curl https://gist.githubusercontent.com/ualmtorres/eb328b653fcc5964f976b22c320dc10f/raw/448b00c44d7102d66077a393dad555585862f923/init.sql --output init.sql</code></pre>
+</div>
+</div>
 </li>
 <li>
 <p>Lanzar un contenedor MySQL con dos <em>bind mounts</em>, uno para inyectar el archivo de inicialización anterior, y otro para la carpeta de datos</p>
@@ -1390,7 +1426,40 @@ $ docker run -d \
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>En Windows (con Git Bash o PowerShell) sería:</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">docker run -d \
+    -p 3306:3306 \
+    --name my-mysql \
+    -v /"$(pwd)"/init.sql:/docker-entrypoint-initdb.d/init.sql \
+    -v /"$(pwd)"/data:/var/lib/mysql \
+    -e MYSQL_ROOT_PASSWORD=secret \
+    mysql</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>En Windows (con Git Bash o PowerShell) el comando sería</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ docker run -d -p 80:80 --name my-web -v /"$(pwd)"/webEstaticaBasica:/usr/local/apache2/htdocs httpd</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>A partir de este ejemplo, usando un cliente local de MySQL se podría acceder al contenedor directamente como <code>localhost</code>.</p>
@@ -1672,7 +1741,7 @@ Vamos a construir un contenedor a partir del código del repositorio y lo ofrezc
 </div>
 </li>
 <li>
-<p>Creación del <code>Dockerfile</code> para la construcción de la imagen.</p>
+<p>Creación del <code>Dockerfile</code> en la carpeta <code>webEstaticaBasica</code> para la construcción de la imagen.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code>FROM ualmtorres/phalcon-apache-ubuntu
@@ -1767,6 +1836,30 @@ ualmtorres/web-estatica-basica               v0                  ed27de86aa03   
 <tr>
 <td class="icon">
 <i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>En Windows sería</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">docker run -d \
+    -p 83:80 \
+    --name webEstaticaBasica \
+    -v /"$(pwd)":/var/www/html \
+    ualmtorres/web-estatica-basica:v0
+---</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
 <div class="paragraph">
@@ -1994,8 +2087,23 @@ services:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code>$ docker-compose up -d</code></pre>
+<pre class="highlightjs highlight"><code>$ cd docker_customer_catalog
+$ docker-compose up -d</code></pre>
 </div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Este archivo despliega un contenedor denominado <code>mysql</code> en el puerto <code>3306</code> del host y otro contenedor denominado <code>php</code> en el puerto <code>80</code> del host. No podrá haber otros contenedores en el host, aunque estén parados` con esos nombres y esos puertos deberán estar libres.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Esto creará un contenedor para cada servicio y una red para que los contenedores de los servicios se puedan comunicar entre sí. El nombre de la red vendrá determinado por el nombre del directorio desde donde se lance Docker Compose. Los contenedores podrán referenciarse unos a otros por el nombre del contenedor.</p>
@@ -2031,7 +2139,7 @@ PING mysql (192.168.32.3) 56(84) bytes of data.
 </td>
 <td class="content">
 <div class="paragraph">
-<p>Aunque en el <code>docker-compose.yml</code> es posible asignar un nombre diferente al contenedor que al servicio al que pertenece, se recomienda usar el mismo nombre. <strong>Los contenedores desplegados con  Docker Compose realmente usan el nombre de los contenedores para referenciarse unos a otros. Por eso, para evitar consfusiones, mejor usar el mismo nombre para servicio y para contenedor.</strong></p>
+<p>Aunque en el <code>docker-compose.yml</code> es posible asignar un nombre diferente al contenedor que al servicio al que pertenece, se recomienda usar el mismo nombre. <strong>Los contenedores desplegados con  Docker Compose realmente usan el nombre de los contenedores para referenciarse unos a otros. Por eso, para evitar confusiones, mejor usar el mismo nombre para servicio y para contenedor.</strong></p>
 </div>
 </td>
 </tr>
@@ -2121,7 +2229,7 @@ PING mysql (192.168.32.3) 56(84) bytes of data.
 <div class="content">
 <img src="./images/CustomerCatalog.png" alt="CustomerCatalog.png" width="100%">
 </div>
-<div class="title">Figure 7. Aplicación web PHP que muestra listado de clientes almacenados en MySQL</div>
+<div class="title">Figura 7. Aplicación web PHP que muestra listado de clientes almacenados en MySQL</div>
 </div>
 </div>
 </div>
@@ -2167,6 +2275,12 @@ PING mysql (192.168.32.3) 56(84) bytes of data.
 <div class="paragraph">
 <p>Para ilustrar esto usaremos un ejemplo ficticio que desarrolle una API con calificaciones y un front para presentar los datos de la API. A continuación se muestran los pasos:</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ mkdir calificaciones
+$ cd calificaciones</code></pre>
+</div>
+</div>
 <div class="sect2">
 <h3 id="truedesarrollo-de-la-api"><a class="anchor" href="#truedesarrollo-de-la-api"></a>6.1. Desarrollo de la API</h3>
 <div class="paragraph">
@@ -2178,13 +2292,13 @@ PING mysql (192.168.32.3) 56(84) bytes of data.
 <p>Desde el directorio del proyecto crear una carpeta <code>api</code> para la API.</p>
 </li>
 <li>
-<p>Crear un archivo <a href="https://gist.github.com/ualmtorres/581e7f6f15cda4d9c7e2b04c4fca3486"><code>.htaccess</code></a> que es necesario para rescribir las rutas en las peticiones a la API</p>
+<p>Crear un archivo <a href="https://gist.githubusercontent.com/ualmtorres/581e7f6f15cda4d9c7e2b04c4fca3486/raw/75624e5ae0275c52d3246812bf8eda87ba5bb188/.htaccess"><code>.htaccess</code></a> que es necesario para rescribir las rutas en las peticiones a la API</p>
 </li>
 <li>
-<p>Crear un archivo <a href="https://gist.github.com/ualmtorres/068ce3477fbee09276a69e37b8cc664d"><code>index.php</code></a> con el código de la API.</p>
+<p>Crear un archivo <a href="https://gist.githubusercontent.com/ualmtorres/068ce3477fbee09276a69e37b8cc664d/raw/1a4e2ce4688a93c67dcb095c52e7453253833bcb/selectividad-api-index.php"><code>index.php</code></a> con el código de la API.</p>
 </li>
 <li>
-<p>Crear el <a href="https://gist.github.com/ualmtorres/efebdfef3bb159ffd55f3a4321fef443"><code>Dockerfile</code></a> con las instrucciones para crear la imagen de la API</p>
+<p>Crear el <a href="https://gist.githubusercontent.com/ualmtorres/efebdfef3bb159ffd55f3a4321fef443/raw/46dc719ee4c0ac7a8ec06857be8452258f3f6647/Dockerfile-Phalcon"><code>Dockerfile</code></a> con las instrucciones para crear la imagen de la API</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-dockerfile" data-lang="dockerfile">FROM ualmtorres/phalcon-apache-ubuntu <i class="conum" data-value="1"></i><b>(1)</b>
@@ -2218,7 +2332,7 @@ EXPOSE 80 <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
 </div>
 </li>
 <li>
-<p>Crear en el directorio de la aplicación (un nivel por encima de <code>api</code>) el archivo <a href="https://gist.github.com/ualmtorres/dc5c2ad42f3bf5d3f625f9234c871cbf"><code>docker-compose.yml</code></a> para poder ejecutar la API.</p>
+<p>Crear en el directorio de la aplicación (un nivel por encima de <code>api</code>) el archivo <a href="https://gist.githubusercontent.com/ualmtorres/dc5c2ad42f3bf5d3f625f9234c871cbf/raw/78c935771f75bafaff3ff183251b7ccf1150bf0e/docker-compose-solo-api.yml"><code>docker-compose.yml</code></a> para poder ejecutar la API. El archivo <code>docker-compose.yml</code> lo creamos un directorio por encima de <code>api</code> porque la especificación del volumen del código de la API en el archivo <code>docker-compose.yml</code> se hace un nivel por encima del directorio <code>api</code></p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml" data-lang="yaml">version: '2'
@@ -2249,7 +2363,7 @@ services:
 </ol>
 </div>
 <div class="paragraph">
-<p>Si desplegamos el <code>docker-compose.yml</code> veremos la API ejecutándose en el puerto 80</p>
+<p>Si desplegamos el <code>docker-compose.yml</code> veremos la API ejecutándose en el puerto 80 (<code><a href="http://localhost/calification" class="bare">http://localhost/calification</a></code>)</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -2349,7 +2463,7 @@ services:
 </table>
 </div>
 <div class="paragraph">
-<p>Si volvemos a desplegar el docker-compose.yml veremos el front ejecutándose en el puerto 8088</p>
+<p>Si volvemos a desplegar el <code>docker-compose.yml</code> con <code>docker-compose up -d</code>, se mantiene intacto lo ya desplegado y se despliegan las modificaciones. El front se verá ejecutándose en el puerto 8088</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -2419,7 +2533,7 @@ services:
 <p>El tener varios archivos para Docker Compose puede resultar confuso y en algunas ocasiones nos puede llevar a errores pensando que hemos usado uno cuando realmente estábamos usando el otro. Además, la creación de imágenes en un despliegue con gran cantidad de servicios implica la construcción manual de cada una de sus imágenes.</p>
 </div>
 <div class="paragraph">
-<p>Para evitar esta situación podemos usar la opción <code>build</code>. La opción <code>build</code> crea las imágenes a partir de los archivos <code>Dockerfile</code> que indiquemos y posteriormente crea el contenedor a partir de esa imagen. Para hacer esto, incluiremos dos paticularidades en el archivo <code>docker-compose.yml</code> con respecto a los que hemos estado usando hasta ahora:</p>
+<p>Para evitar esta situación podemos usar la opción <code>build</code>. La opción <code>build</code> crea las imágenes a partir de los archivos <code>Dockerfile</code> que indiquemos y posteriormente crea el contenedor a partir de esa imagen. Para hacer esto, incluiremos dos particularidades en el archivo <code>docker-compose.yml</code> con respecto a los que hemos estado usando hasta ahora:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2819,7 +2933,7 @@ $ docker push 192.168.65.103:5000/alpine <i class="conum" data-value="4"></i><b>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-19 20:31:28 CEST
+Last updated 2020-11-06 20:03:57 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

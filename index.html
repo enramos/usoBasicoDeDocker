@@ -1337,7 +1337,7 @@ $ docker run -d \
 <p>Interfaz de comandos de Windows: <code>%cd%</code></p>
 </li>
 <li>
-<p>Powershell, Linux y Mac OS: <code>${PWD}</code> ó <code>$(pwd)</code></p>
+<p>Linux y Mac OS: <code>${PWD}</code> ó <code>$(pwd)</code></p>
 </li>
 <li>
 <p>Ruta combinada en Git Bash:</p>
@@ -1354,10 +1354,7 @@ $ docker run -d \
 <div class="ulist">
 <ul>
 <li>
-<p><code>/host_mnt/"$(pwd)"/webEstaticaBasica</code></p>
-</li>
-<li>
-<p><code>//"$(pwd)"/webEstaticaBasica</code></p>
+<p><code>${PWD}/webEstaticaBasica</code></p>
 </li>
 </ul>
 </div>
@@ -2933,7 +2930,7 @@ $ docker push 192.168.65.103:5000/alpine <i class="conum" data-value="4"></i><b>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-11-06 20:03:57 CET
+Last updated 2020-11-11 23:35:16 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

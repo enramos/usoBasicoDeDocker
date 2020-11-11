@@ -478,12 +478,11 @@ image::webEstaticaBasica.png[]
 Existen varias formas de expresar el directorio actual para facilitar la especificación de la ruta local.
 
 * Interfaz de comandos de Windows: `%cd%`
-* Powershell, Linux y Mac OS: `${PWD}` ó `$(pwd)`
+* Linux y Mac OS: `${PWD}` ó `$(pwd)`
 * Ruta combinada en Git Bash: 
 ** `//"$(pwd)"/webEstaticaBasica`
 * Ruta combinada en Powershell: 
-** `/host_mnt/"$(pwd)"/webEstaticaBasica`
-** `//"$(pwd)"/webEstaticaBasica`
+** `${PWD}/webEstaticaBasica`
 ****
 
 .Ilustración de _bind mount_ con una base de datos MySQL

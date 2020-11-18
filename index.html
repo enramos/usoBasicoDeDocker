@@ -2177,13 +2177,12 @@ PING mysql (192.168.32.3) 56(84) bytes of data.
       &lt;/thead&gt;
       &lt;tbody&gt;
         &lt;?php
-        $conexion = mysql_connect("mysql", "root", "secret"); <i class="conum" data-value="1"></i><b>(1)</b>
-        mysql_select_db("SG", $conexion);
+        $conexion = new mysqli("mysql", "root", "secret", "SG"); <i class="conum" data-value="1"></i><b>(1)</b>
 
         $cadenaSQL = "select * from s_customer";
-        $resultado = mysql_query($cadenaSQL);
+        $resultado = $conexion-&gt;query($cadenaSQL);
 
-        while ($fila = mysql_fetch_object($resultado)) {
+        while ($fila = $resultado-&gt;fetch_object()) {
          echo "&lt;tr&gt;&lt;td&gt; " .$fila-&gt;name .
          "&lt;/td&gt;&lt;td&gt;" . $fila-&gt;credit_rating .
          "&lt;/td&gt;&lt;td&gt;" . $fila-&gt;address .
@@ -2930,7 +2929,7 @@ $ docker push 192.168.65.103:5000/alpine <i class="conum" data-value="4"></i><b>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-11-11 23:35:16 CET
+Last updated 2020-11-18 07:56:23 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
